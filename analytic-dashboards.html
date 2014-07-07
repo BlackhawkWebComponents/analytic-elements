@@ -1,0 +1,125 @@
+<link rel="import" href="avatars.html">
+<link rel="import" href="dashboard-images.html">
+<link rel="import" href="dashboard-icons.html">
+<link rel="import" href="../core-toolbar/core-toolbar.html">
+<link rel="import" href="../core-selector/core-selector.html">
+<link rel="import" href="../core-icon/core-icon.html">
+
+<polymer-element name="analytic-dashboards" attributes="user dashboards dashboard wide allScores" vertical layout>
+<template>
+
+  <link rel="stylesheet" href="analytic-dashboards.css">
+  <link rel="stylesheet" href="dashboard-themes.css">
+
+  <div class="dashboards-panel" flex>
+
+    <core-toolbar class="dashboard-toolbar" slide-down?="{{parentElement.selected !== 'dashboard' && parentElement.lastSelected !== 'dashboard'}}">
+
+      <core-icon icon="drive-fusiontable" size="64" class="topeka-avatar"></core-icon>
+      <div flex>Analytics App</div>
+
+    </core-toolbar>
+
+    <core-selector class="dashboard-list content {{ {wide: wide} | tokenList }}" selected="{{selected}}" tile-cascade?="{{parentElement.selected !== 'dashboard' && parentElement.lastSelected !== 'dashboard'}}" fade?="{{parentElement.lastSelected === 'splash'}}">
+
+      <div class="dashboard-item leaderboard" vertical layout>
+        <div class="tile theme-bg-a" dummy fit></div>
+        <div class="tile" flex vertical layout>
+          <div flex relative>
+            <!-- sizing wrapper -->
+            <div fit layout vertical center center-justified>
+              <div class="dashboard-bg-wrapper" relative>
+                <core-icon size="" icon="drive-fusiontable" class="dashboard-tile-bg" fit></core-icon>
+              </div>
+            </div>
+          </div>
+          <div class="cat-name" horizontal center layout>
+            <div flex>Dashboard Control</div>
+            <core-icon class="dashboard-icon" icon="arrow-forward"></core-icon>
+          </div>
+        </div>
+      </div>
+
+      <template repeat="{{cat, i in dashboards}}">
+
+
+        <template bind="{{allScores[cat.name] as scores}}">
+          <div class="dashboard-item {{cat.theme}}-theme " vertical layout needZ?="{{dashboard.name === cat.name}}">
+            <div class="tile theme-bg-a" dummy fit hero-id="{{dashboard.name === cat.name ? 'punch' : ''}}" hero?="{{dashboard.name === cat.name}}"></div>
+            <div class="tile" flex vertical layout>
+              <div flex relative>
+                <!-- sizing wrapper -->
+                <div fit layout vertical center center-justified>
+                  <div class="dashboard-bg-wrapper" relative>
+                      <!--<core-icon size="" class="dashboard-tile-bg {{ {'theme-icon': scores.length === cat.analytics.length} | tokenList }}" icon="{{scores.length === cat.analytics.length ? 'check' : 'dashboard-icons:' + cat.id}}" cross-fade-delayed?="{{dashboard.name === cat.name && parentElement.lastSelected === 'dashboard'}}" fit></core-icon>-->
+                      <core-icon size="" class="dashboard-tile-bg theme-icon" icon="drive-fusiontable" cross-fade-delayed?="{{dashboard.name === cat.name && parentElement.lastSelected === 'dashboard'}}" fit></core-icon>
+                  </div>
+                </div>
+              </div>
+              <div class="cat-name theme-bg" horizontal center layout hero-id="{{dashboard.name === cat.name ? 'punch-bottom' : ''}}" hero?="{{dashboard.name === cat.name}}">
+                <div flex>
+                  <span cross-fade-delayed?="{{dashboard.name === cat.name && parentElement.lastSelected === 'dashboard'}}">{{cat.name}}</span>
+                </div>
+                <core-icon class="dashboard-icon theme-bg" icon="av:play-arrow" cross-fade-delayed?="{{dashboard.name === cat.name && parentElement.lastSelected === 'dashboard'}}"></core-icon>
+              </div>
+            </div>
+          </div>
+        </template>
+
+
+      </template>
+
+      <div class="dashboard-item profile" vertical layout>
+        <div class="tile theme-bg-a" dummy fit></div>
+        <div class="tile" flex vertical layout>
+          <div flex relative>
+            <!-- sizing wrapper -->
+            <div fit layout vertical center center-justified>
+              <div class="dashboard-bg-wrapper" relative>
+                <core-icon size="" icon="dashboard-icons:profile" class="dashboard-tile-bg" fit></core-icon>
+              </div>
+            </div>
+          </div>
+          <div class="cat-name" horizontal center layout>
+            <div flex>Profile</div>
+            <core-icon class="dashboard-icon" icon="arrow-forward"></core-icon>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-item polymer-logo" hidden?="{{wide}}" vertical layout>
+        <div class="tile" fit>
+          <core-icon size icon="dashboard-icons:polymer"></core-icon>
+        </div>
+      </div>
+
+    </core-selector>
+
+  </div>
+
+</template>
+<script>
+
+  Polymer('analytic-dashboards', {
+
+    wide: false,
+
+    created: function() {
+      this.dashboards = [];
+    },
+
+    selectedChanged: function() {
+      // first one is leaderboard, last one is profile
+      if (this.selected === 0) {
+        this.dashboard = {name: 'leaderboard'};
+      } else if (this.selected === this.dashboards.length + 1) {
+        this.dashboard = {name: 'profile'};
+      } else {
+        this.dashboard = this.dashboards[this.selected - 1];
+      }
+    }
+
+  });
+
+</script>
+</polymer-element>

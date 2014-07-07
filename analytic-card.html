@@ -1,0 +1,77 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-icons/core-icons.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-shadow/paper-shadow.html">
+<link rel="import" href="../core-style/core-style.html">
+
+<core-style id="analytic-card">
+    :host {
+        display: inline-block;
+        height: 300px;
+        width: calc({{ 100 / g.columns }}% - 32px);
+        background: white;
+        margin: 16px;
+        padding-bottom: 20px;
+        border-radius: 2px;
+    }
+
+    paper-icon-button {
+        vertical-align: middle;
+    }
+
+
+    .header {
+        padding-bottom:4px;
+        padding-top:4px;
+        padding-left: 16px;
+        padding-right:8px;
+    }
+
+</core-style>
+
+<!--
+Element providing ..
+
+##### Example
+
+    <analytic-card>
+    </analytic-card>
+
+@element analytic-card
+@blurb Element providing ..
+@status alpha
+@url http://bhawke.github.io/analytic-card
+-->
+<polymer-element name="analytic-card"
+                 attributes="name interactive"
+                 vertical center center-justified layout>
+    <template>
+
+        <core-style ref="analytic-card"></core-style>
+
+        <paper-shadow z="1"></paper-shadow>
+
+        <div vertical layout fit>
+            <div class="header" horizontal layout center>
+                <div class="title" flex>{{name}}</div>
+                <div layout horizontal end-justified>
+                    <paper-icon-button icon="refresh" on-tap="{{reset}}"></paper-icon-button>
+                </div>
+            </div>
+            <div class="chart" flex>
+                <content id="analytic"></content>
+            </div>
+        </div>
+
+    </template>
+    <script>
+        Polymer('analytic-card', {
+            name: '',
+            interactive:false,
+            reset: function() {
+                var analytic = this.$.analytic.getDistributedNodes()[1];
+                analytic.target = null;
+            }
+        });
+    </script>
+</polymer-element>

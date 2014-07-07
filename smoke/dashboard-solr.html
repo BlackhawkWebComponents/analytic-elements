@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>analytic-dashboard Demo</title>
+
+    <script src="../../platform/platform.js"></script>
+
+    <link rel="import" href="../analytic-dashboard.html">
+    <link rel="import" href="../../solr-analytic/solr-analytic.html">
+    <link rel="import" href="../../core-media-query/core-media-query.html">
+    <link rel="import" href="../default-theme.html">
+
+</head>
+<body unresolved  vertical layout>
+
+<template is="auto-binding">
+
+    <core-style ref="main"></core-style>
+    <core-media-query query="min-width: 900px" queryMatches="{{wide}}"></core-media-query>
+
+    <analytic-dashboard wide="{{wide}}">
+
+        <analytic-card name="By Category" interactive="true">
+            <solr-analytic analytic
+                    baseUrl="http://localhost:8983/solr/"
+                    chartType="Bar"
+                    limit="8"
+                    target="{{dashboard}}">
+                <q-select>
+                    <q-field expr="cat"></q-field>
+                </q-select>
+                <q-from>
+                    <q-dataset name="collection1"></q-dataset>
+                </q-from>
+                <q-where>
+                    <q-condition field="cat" op="equals" value="{{dashboard}}"></q-condition>
+                    <q-condition field="manu_id_s" op="equals" value="{{manufacturer}}"></q-condition>
+                </q-where>
+            </solr-analytic>
+        </analytic-card>
+
+        <analytic-card name="By Manufacturer" interactive="true">
+            <solr-analytic
+                    analytic
+                    baseUrl="http://localhost:8983/solr/"
+                    chartType="Doughnut"
+                    showLegend="true"
+                    limit="8"
+                    target="{{manufacturer}}">
+                <q-select>
+                    <q-field expr="manu_id_s"></q-field>
+                </q-select>
+                <q-from>
+                    <q-dataset name="collection1"></q-dataset>
+                </q-from>
+                <q-where>
+                    <q-condition field="cat" op="equals" value="{{dashboard}}"></q-condition>
+                    <q-condition field="manu_id_s" op="equals" value="{{manufacturer}}"></q-condition>
+                </q-where>
+            </solr-analytic>
+        </analytic-card>
+
+    </analytic-dashboard>
+
+</template>
+
+</body>
+</html>

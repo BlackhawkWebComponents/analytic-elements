@@ -1,0 +1,66 @@
+<!doctype html>
+
+<html>
+<head>
+  <title>analytic-dashboards</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <script src="../../platform/platform.js"></script>
+  
+  <script src="sampleData.js"></script>
+  
+  <link rel="import" href="../theme.html">
+  <link rel="import" href="../../font-roboto/roboto.html">
+  <link rel="import" href="../../core-icons/core-icons.html">
+  <link rel="import" href="../../core-icons/iconsets/av-icons.html">
+  <link rel="import" href="../../core-media-query/core-media-query.html">
+  <link rel="import" href="../analytic-dashboards.html">
+  
+  <style>
+  
+    body {
+      font-family: "RobotoDraft", sans-serif;
+    }
+  
+  </style>
+  
+</head>
+<body unresolved>
+
+  <core-media-query query="min-width: 900px"></core-media-query>
+  
+  <analytic-dashboards fit></analytic-dashboards>
+  
+  <script>
+  
+    addEventListener('polymer-ready', function() {
+  
+      var c = document.querySelector('analytic-dashboards');
+      var m = document.querySelector('core-media-query');
+      
+      m.addEventListener('core-media-change', function() {
+        console.log('core-media-change', m.queryMatches);
+        c.wide = m.queryMatches;
+      });
+      
+      c.user = {
+        name: 'Frankie F',
+        avatar: 1,
+        scores: {
+          'History': [8],
+          'Sports': [0]
+        },
+        score: 8
+      };
+      c.allScores = c.user.scores;
+      c.dashboards = window.dashboards;
+      
+    });
+  
+  </script>
+  
+</body>
+</html>
