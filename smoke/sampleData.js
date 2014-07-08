@@ -9,7 +9,7 @@
                 {
                     type: 'solr',
                     name: 'By Category',
-                    baseUrl: 'http://cloudfortressinc:8983/solr/',
+                    baseUrl: 'http://cloudfortressinc.com:8983/solr/',
                     chartType: 'Bar',
                     limit: 8,
                     query: {
@@ -20,7 +20,7 @@
                 {
                     type: 'solr',
                     name: 'By Manufacturer',
-                    baseUrl: 'http://cloudfortressinc:8983/solr/',
+                    baseUrl: 'http://cloudfortressinc.com:8983/solr/',
                     chartType: 'Doughnut',
                     limit: 8,
                     query: {
