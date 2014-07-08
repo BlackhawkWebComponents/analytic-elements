@@ -1,9 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="analytic-card.html">
 <link rel="import" href="../solr-analytic/solr-analytic.html">
-<link rel="import" href="../core-animated-pages/core-animated-pages.html">
-<link rel="import" href="../core-animated-pages/transitions/slide-up.html">
-<link rel="import" href="../core-animated-pages/transitions/slide-down.html">
+
 
 <core-style id="analytic-dashboard">
     section {
@@ -26,55 +24,55 @@
     }
 
     .wide .dashboard-bg {
-        width: 512px;
-        height: 512px;
+    width: 512px;
+    height: 512px;
     }
 
     .dashboard-bg > core-icon {
-        position: absolute !important;
+    position: absolute !important;
     }
 
     .main-button {
-        position: absolute;
-        top: 12px;
-        left: 8px;
-        fill: #424242;
-        z-index: 10000;
+    position: absolute;
+    top: 12px;
+    left: 8px;
+    fill: #424242;
+    z-index: 10000;
     }
 
     .main-button.wide {
-        position: fixed;
-        top: 12px;
-        left: 16px;
-        fill: #424242;
+    position: fixed;
+    top: 12px;
+    left: 16px;
+    fill: #424242;
     }
 
     .title {
-        padding-left: 56px;
-        font-size: 16px;
+    padding-left: 56px;
+    font-size: 16px;
     }
 
     .wide .title {
-        padding: 0;
+    padding: 0;
     }
 
     .scroll {
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     }
 
     .wide > .main-button {
-        top: 12px;
-        left: 16px;
+    top: 12px;
+    left: 16px;
     }
 
     .main {
-        position: relative;
+    position: relative;
     }
 
     .main::-webkit-scrollbar {
-        display: none;
+    display: none;
     }
 </core-style>
 
@@ -100,25 +98,27 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
 <polymer-element
         name="analytic-dashboard"
         on-analytic-item-selected="{{analyticItemSelected}}"
-        attributes="dashboard wide" vertical layout>
+        attributes="dashboard selected wide" vertical layout>
     <template>
         <core-style ref="analytic-dashboard"></core-style>
 
         <link rel="stylesheet" href="dashboard-themes.css">
 
+
         <div class="{{dashboard.theme}}-theme theme-bg-a {{ {wide: wide} | tokenList }}" dummy fit layout vertical center center-justified hero-id="punch" hero>
             <div class="dashboard-bg" relative?="{{wide}}" flex?="{{!wide}}">
-                <!-- until we get real icons, use fusiontable icon -->
-                <!--<core-icon size="" icon="drive-fusiontable" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}" cross-fade?="{{parentElement.selected !== 'dashboard'}}" fit></core-icon>-->
-                <!--<core-icon size="" icon="dashboard-images:{{dashboard.id}}" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}" cross-fade="{{parentElement.selected !== 'dashboard'}}" fit></core-icon>-->
+
             </div>
         </div>
 
         <div class="main {{ {scroll: wide} | tokenList }}" flex center layout vertical hero-p>
-            <div flex vertical layout slide-up-offscreen?="{{parentElement.selected === 'dashboard'}}" cross-fade="{{!wide && parentElement.selected !== 'dashboard'}}" class="card {{ {wide: wide} | tokenList }}" relative>
+
+            <div flex vertical layout slide-up-offscreen?="{{parentElement.selected === 'dashboard'}}"  cross-fade="{{!wide && parentElement.selected !== 'dashboard'}}" class="card {{ {wide: wide} | tokenList }}" relative>
                 <core-toolbar class="{{dashboard.theme}}-theme theme-bg">
-                    <div class="title">{{dashboard.name}}</div>
-                    <core-icon size="64" icon="drive-fusiontable" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}" cross-fade="{{parentElement.selected !== 'dashboard'}}"></core-icon>
+                    <div class="title">
+                        <core-icon size="48" icon="drive-fusiontable" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}" cross-fade="{{parentElement.selected !== 'dashboard'}}"></core-icon>
+                        {{dashboard.name}}
+                    </div>
 
                </core-toolbar>
                 <section flex horizontal wrap layout>
@@ -148,11 +148,18 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
             </div>
 
             <paper-icon-button class="main-button {{ {'theme-color': !wide, wide: wide} | tokenList }}" icon="arrow-back"  on-tap="{{mainAction}}" hero?="{{parentElement.selected === 'dashboards'}}" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}"></paper-icon-button>
+
         </div>
+
+
     </template>
 
     <script>
         Polymer('analytic-dashboard', {
+            selected: 'front',
+            selectedItem: null,
+            wide: false,
+
             created: function() {
                 this.cards = [];
                 this.g = CoreStyle.g;
@@ -161,7 +168,7 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
                 console.log('attached called');
             },
             domReady: function() {
-                this.updateCards();
+                //this.updateCards();
             },
             updateCards: function() {
                 this.cards = Array.prototype.slice.call(

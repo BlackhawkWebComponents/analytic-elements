@@ -52,7 +52,7 @@
                 <div fit layout vertical center center-justified>
                   <div class="dashboard-bg-wrapper" relative>
                       <!--<core-icon size="" class="dashboard-tile-bg {{ {'theme-icon': scores.length === cat.analytics.length} | tokenList }}" icon="{{scores.length === cat.analytics.length ? 'check' : 'dashboard-icons:' + cat.id}}" cross-fade-delayed?="{{dashboard.name === cat.name && parentElement.lastSelected === 'dashboard'}}" fit></core-icon>-->
-                      <core-icon size="" class="dashboard-tile-bg theme-icon" icon="drive-fusiontable" cross-fade-delayed?="{{dashboard.name === cat.name && parentElement.lastSelected === 'dashboard'}}" fit></core-icon>
+                      <core-icon size="" class="dashboard-tile-bg theme-icon"  icon="drive-fusiontable" cross-fade-delayed?="{{dashboard.name === cat.name && parentElement.lastSelected === 'dashboard'}}" fit></core-icon>
                   </div>
                 </div>
               </div>
@@ -109,6 +109,7 @@
     },
 
     selectedChanged: function() {
+        console.log('selectedChanged: ' + this.selected);
       // first one is leaderboard, last one is profile
       if (this.selected === 0) {
         this.dashboard = {name: 'leaderboard'};

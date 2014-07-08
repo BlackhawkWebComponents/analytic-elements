@@ -72,6 +72,7 @@
 .dashboard-bg-wrapper {
   width: 80%;
   height: 80%;
+  z-index: 10000;
 }
 
 .completed .dashboard-bg-wrapper {

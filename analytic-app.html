@@ -3,6 +3,7 @@
 <link rel="import" href="../core-animated-pages/core-animated-pages.html">
 <link rel="import" href="../core-animated-pages/transitions/cross-fade.html">
 <link rel="import" href="../core-animated-pages/transitions/slide-up.html">
+<link rel="import" href="../core-animated-pages/transitions/slide-down.html">
 <link rel="import" href="../core-animated-pages/transitions/scale-up.html">
 <link rel="import" href="../core-animated-pages/transitions/tile-cascade.html">
 <link rel="import" href="../core-animated-pages/transitions/hero-transition.html">
@@ -17,10 +18,10 @@
         overflow: hidden;
     }
     .splash {
+        background: url(../images/loading_icon.svg);
         background-color: #eee;
         background-repeat: no-repeat;
         background-position: 50%;
-        background-image: url(../images/splash.svg);
     }
 
     .splash.wide {
@@ -33,9 +34,9 @@
     <template>
         <core-style ref="analytic-app"></core-style>
 
-        <core-animated-pages selected="{{selected}}" transitions="cross-fade cross-fade-delayed scale-up slide-up slide-up-offscreen slide-down tile-cascade hero-transition" flex >
+        <core-animated-pages selected="{{selected}}" transitions="cross-fade cross-fade-delayed scale-up slide-up slide-up-offscreen slide-down tile-cascade hero-transition" flex on-core-animated-pages-transition-end="{{transitionEndAction}}">
 
-            <div name="splash">
+            <div id="splash" name="splash">
                 <span fit class="splash {{ {wide: wide} | tokenList }}" cross-fade></span>
             </div>
 
@@ -53,12 +54,12 @@
 
         (function() {
 
-            /*window.setAnalyticsAppTransitionSpeed = function(ms) {
+            window.setAnalyticsAppTransitionSpeed = function(ms) {
                 CoreStyle.g.transitions.duration = ms + 'ms';
                 CoreStyle.g.transitions.scaleDelay = CoreStyle.g.transitions.duration;
             }
 
-            setAnalyticsAppTransitionSpeed(350);*/
+            setAnalyticsAppTransitionSpeed(350);
 
             Polymer('analytic-app', {
 
@@ -87,10 +88,12 @@
                 },
 
                 showDashboards: function() {
+                    console.log('showDashboards');
                     this.selected = 'dashboards';
                 },
 
                 showDashboard: function() {
+                    console.log('showDashboard');
                     this.selected = 'dashboard';
                 },
                 dashboardSelect: function() {
@@ -100,7 +103,13 @@
 
                 eventDelegates: {
                     'main': 'showDashboards'
+                },
+
+                transitionEndAction: function() {
+                    console.log('transitionEndAction');
+
                 }
+
 
             });
 
