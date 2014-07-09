@@ -4,6 +4,7 @@
 <link rel="import" href="../paper-shadow/paper-shadow.html">
 <link rel="import" href="../core-style/core-style.html">
 <link rel="import" href="../solr-analytic/solr-analytic.html">
+<link rel="import" href="../bigquery-analytic/bigquery-analytic.html">
 
 <core-style id="analytic-card">
     :host {
@@ -85,6 +86,33 @@ Element providing ..
                             </template>
                         </q-where>
                     </solr-analytic>
+                </template>
+                <template if="{{analytic.type == 'bigquery'}}">
+                    <bigquery-analytic
+                            analytic
+                            projectId="{{analytic.projectId}}"
+                            chartType="{{analytic.chartType}}"
+                            limit="{{analytic.limit}}"
+                            target="{{analytic.target}}"
+                            on-analytic-item-selected="{{analyticItemSelected}}">
+                        <q-select>
+                            <template repeat="{{analytic.query.select}}">
+                                <q-field expr="{{expr}}" as="{{as}}"></q-field>
+                            </template>
+                        </q-select>
+                        <q-from>
+                            <q-dataset name="{{analytic.query.from}}"></q-dataset>
+                        </q-from>
+                        <q-where>
+                            <template repeat="{{analytic.query.where}}">
+                                <q-condition field="{{field}}" op="{{op}}" value="{{value}}"></q-condition>
+                            </template>
+                            <template repeat="{{cond, i in global.query.where}}">
+                                <q-condition field="{{cond.field}}" op="{{cond.op}}" value="{{cond.value}}"></q-condition>
+                            </template>
+                        </q-where>
+                        <q-group-by fields="{{analytic.groupBy}}"></q-group-by>
+                    </bigquery-analytic>
                 </template>
             </div>
         </div>

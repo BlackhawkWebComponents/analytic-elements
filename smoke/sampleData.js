@@ -17,7 +17,7 @@
                 {
                     type: 'solr',
                     name: 'By Category',
-                    baseUrl: 'http://cloudfortressinc.com:8983/solr/',
+                    baseUrl: 'http://localhost:8983/solr/',
                     chartType: 'Bar',
                     limit: 8,
                     target:'cat',
@@ -29,7 +29,7 @@
                 {
                     type: 'solr',
                     name: 'By Manufacturer',
-                    baseUrl: 'http://cloudfortressinc.com:8983/solr/',
+                    baseUrl: 'http://localhost:8983/solr/',
                     chartType: 'Doughnut',
                     limit: 8,
                     target:'manu_id_s',
@@ -41,10 +41,28 @@
             ]
         },
         {
-            name: 'Dashboard 1',
+            name: 'BigQuery Dashboard',
             id: 'knowledge',
             theme: 'lightgrey',
-            analytics: []
+            analytics: [
+                {
+                    type: 'bigquery',
+                    name: 'Iraq - Actor1 Groups June 2014',
+                    projectId: 'blackhawk-website',
+                    chartType: 'Bar',
+                    limit: 8,
+                    query: {
+                        select: [{expr:'actor1knowngroupcode'},{expr:'count(*)',as:'actor1_knowngroup_count'}],
+                        from: '[gdelt-bq:full.events]',
+                        where: [
+                            {field:'actor1knowngroupcode',op:'isnotnull'},
+                            {field:'actiongeo_countrycode',op:'equals',value:"'IZ'"},
+                            {field:'monthyear',op:'equals',value:'201406'}
+                        ],
+                        groupBy: "['actor1knowngroupcode']"
+                    }
+                }
+            ]
         },
         {
             name: 'Dashboard 2',
