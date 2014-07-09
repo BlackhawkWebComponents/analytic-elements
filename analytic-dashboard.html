@@ -95,14 +95,19 @@ Element providing ..
 
 TODO: figure out how to bind where vals to target, look at <core-bind>
 -->
-<polymer-element
+<!--<polymer-element
         name="analytic-dashboard"
         on-analytic-item-selected="{{analyticItemSelected}}"
-        attributes="dashboard selected wide" vertical layout>
+        attributes="dashboard selected wide" vertical layout>-->
+<polymer-element
+        name="analytic-dashboard"
+        attributes="dashboard selected wide" vertical layout
+        on-analytic-item-selected="{{analyticItemSelected}}">
     <template>
         <core-style ref="analytic-dashboard"></core-style>
 
         <link rel="stylesheet" href="dashboard-themes.css">
+
 
 
         <div class="{{dashboard.theme}}-theme theme-bg-a {{ {wide: wide} | tokenList }}" dummy fit layout vertical center center-justified hero-id="punch" hero>
@@ -119,31 +124,13 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
                         <core-icon size="48" icon="drive-fusiontable" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}" cross-fade="{{parentElement.selected !== 'dashboard'}}"></core-icon>
                         {{dashboard.name}}
                     </div>
-
-               </core-toolbar>
+                </core-toolbar>
                 <section flex horizontal wrap layout>
                     <content id="cards" select="analytic-card"></content>
 
-                    <template repeat="{{dashboard.analytics}}">
-                        <template if="{{type == 'solr'}}">
-                            <analytic-card name="{{name}}">
-                                <solr-analytic analytic
-                                               baseUrl="{{baseUrl}}"
-                                               chartType="{{chartType}}"
-                                               limit="{{limit}}">
-                                    <q-select>
-                                        <template repeat="{{query.select}}">
-                                            <q-field expr="{{expr}}"></q-field>
-                                        </template>
-                                    </q-select>
-                                    <q-from>
-                                        <q-dataset name="{{query.from}}"></q-dataset>
-                                    </q-from>
-                                </solr-analytic>
-                            </analytic-card>
-                        </template>
+                    <template repeat="{{analytic in dashboard.analytics}}">
+                        <analytic-card analytic="{{analytic}}" global="{{dashboard.global}}" wide="{{wide}}"></analytic-card>
                     </template>
-
                 </section>
             </div>
 
@@ -156,25 +143,12 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
 
     <script>
         Polymer('analytic-dashboard', {
-            selected: 'front',
-            selectedItem: null,
+            //selected: 'front',
+            //selectedItem: null,
             wide: false,
 
             created: function() {
-                this.cards = [];
                 this.g = CoreStyle.g;
-            },
-            attached: function() {
-                console.log('attached called');
-            },
-            domReady: function() {
-                //this.updateCards();
-            },
-            updateCards: function() {
-                this.cards = Array.prototype.slice.call(
-                        this.$.cards.getDistributedNodes());
-
-                this.onMutation(this, this.updateCards); // Watch for future updates.
             },
             wideChanged: function() {
                 if (this.wide)
@@ -182,9 +156,12 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
                 else
                     this.g.columns = 1;
             },
+            /**
+             * TODO: make it so we don't have to treat each scenario differently, unify model
+             */
             analyticItemSelected : function(event, detail, sender) {
-                //TODO: rename target to something else, confusing...
-                event.srcElement.target = detail.items[0].label;
+                if (!this.dashboard)
+                    event.srcElement.target = detail.items[0].label;
             },
             mainAction: function() {
                 this.fire('main');

@@ -3,6 +3,7 @@
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-shadow/paper-shadow.html">
 <link rel="import" href="../core-style/core-style.html">
+<link rel="import" href="../solr-analytic/solr-analytic.html">
 
 <core-style id="analytic-card">
     :host {
@@ -43,7 +44,7 @@ Element providing ..
 @url http://bhawke.github.io/analytic-card
 -->
 <polymer-element name="analytic-card"
-                 attributes="name interactive"
+                 attributes="name interactive analytic global wide globalFilters"
                  vertical center center-justified layout>
     <template>
 
@@ -60,6 +61,31 @@ Element providing ..
             </div>
             <div class="chart" flex>
                 <content id="analytic"></content>
+                <template if="{{analytic.type == 'solr'}}">
+                    <solr-analytic analytic
+                                   baseUrl="{{analytic.baseUrl}}"
+                                   chartType="{{analytic.chartType}}"
+                                   limit="{{analytic.limit}}"
+                                   target="{{analytic.target}}"
+                                   on-analytic-item-selected="{{analyticItemSelected}}">
+                        <q-select>
+                            <template repeat="{{analytic.query.select}}">
+                                <q-field expr="{{expr}}"></q-field>
+                            </template>
+                        </q-select>
+                        <q-from>
+                            <q-dataset name="{{analytic.query.from}}"></q-dataset>
+                        </q-from>
+                        <q-where>
+                            <template repeat="{{analytic.query.where}}">
+                                <q-condition field="{{field}}" op="{{op}}" value="{{value}}"></q-condition>
+                            </template>
+                            <template repeat="{{cond, i in global.query.where}}">
+                                <q-condition field="{{cond.field}}" op="{{cond.op}}" value="{{cond.value}}"></q-condition>
+                            </template>
+                        </q-where>
+                    </solr-analytic>
+                </template>
             </div>
         </div>
 
@@ -68,9 +94,44 @@ Element providing ..
         Polymer('analytic-card', {
             name: '',
             interactive:false,
+            analytic: null,
+            analyticChanged: function() {
+                if (this.analytic != null) {
+                    this.name = this.analytic.name;
+                }
+            },
+            /**
+             * TODO: make it so we don't have to treat each scenario differently, unify model
+             */
             reset: function() {
-                var analytic = this.$.analytic.getDistributedNodes()[1];
-                analytic.target = null;
+                if (this.$.analytic && this.$.analytic.getDistributedNodes()[1]) {
+                    var analytic = this.$.analytic.getDistributedNodes()[1];
+                    analytic.target = null;
+                } else {
+                    for (var i = 0; i < this.global.query.where.length; ++i) {
+                        var cond = this.global.query.where[i];
+                        if (cond.field === this.analytic.target) {
+                            cond.value = null;
+                        }
+                    }
+                }
+
+            },
+            /**
+             * TODO: make it so we don't have to treat each scenario differently, unify model
+             */
+            analyticItemSelected : function(event, detail, sender) {
+                if (this.global) {
+                    var target = sender.target;
+                    var val = detail.items[0].label;
+                    for (var i = 0; i < this.global.query.where.length; ++i) {
+                        var cond = this.global.query.where[i];
+                        if (cond.field === target) {
+                            cond.value = val;
+                        }
+                    }
+                }
+
             }
         });
     </script>

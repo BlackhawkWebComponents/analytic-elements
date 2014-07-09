@@ -21,12 +21,13 @@
 
     <analytic-dashboard wide="{{wide}}">
 
+        <!-- TODO: parameratize url, cloudfortressinc.com -->
         <analytic-card name="By Category" interactive="true">
             <solr-analytic analytic
-                    baseUrl="http://cloudfortressinc.com:8983/solr/"
+                    baseUrl="http://localhost:8983/solr/"
                     chartType="Bar"
                     limit="8"
-                    target="{{dashboard}}">
+                    target="{{category}}">
                 <q-select>
                     <q-field expr="cat"></q-field>
                 </q-select>
@@ -34,7 +35,7 @@
                     <q-dataset name="collection1"></q-dataset>
                 </q-from>
                 <q-where>
-                    <q-condition field="cat" op="equals" value="{{dashboard}}"></q-condition>
+                    <q-condition field="cat" op="equals" value="{{category}}"></q-condition>
                     <q-condition field="manu_id_s" op="equals" value="{{manufacturer}}"></q-condition>
                 </q-where>
             </solr-analytic>
@@ -43,7 +44,7 @@
         <analytic-card name="By Manufacturer" interactive="true">
             <solr-analytic
                     analytic
-                    baseUrl="http://cloudfortressinc.com:8983/solr/"
+                    baseUrl="http://localhost:8983/solr/"
                     chartType="Doughnut"
                     showLegend="true"
                     limit="8"
@@ -55,7 +56,7 @@
                     <q-dataset name="collection1"></q-dataset>
                 </q-from>
                 <q-where>
-                    <q-condition field="cat" op="equals" value="{{dashboard}}"></q-condition>
+                    <q-condition field="cat" op="equals" value="{{category}}"></q-condition>
                     <q-condition field="manu_id_s" op="equals" value="{{manufacturer}}"></q-condition>
                 </q-where>
             </solr-analytic>
