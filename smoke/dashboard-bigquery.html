@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>analytic-dashboard Demo</title>
+
+    <script src="../../platform/platform.js"></script>
+
+    <link rel="import" href="../analytic-dashboard.html">
+    <link rel="import" href="../../bigquery-api/mock-bigquery-api.html">
+    <link rel="import" href="../../core-media-query/core-media-query.html">
+    <link rel="import" href="../default-theme.html">
+
+</head>
+<body unresolved  vertical layout>
+
+<template is="auto-binding">
+
+    <core-style ref="main"></core-style>
+    <core-media-query query="min-width: 900px" queryMatches="{{wide}}"></core-media-query>
+
+    <analytic-dashboard wide="{{wide}}">
+
+        <!-- TODO: parameratize url, cloudfortressinc.com -->
+        <analytic-card name="By Actor1 Group In Iraq" interactive="true">
+            <bigquery-analytic
+                    projectId="blackhawk-website"
+                    chartType="Bar">
+                <q-select>
+                    <q-field expr="actor1knowngroupcode"></q-field>
+                    <q-field expr="count(*)" as="actor1_knowngroup_count"></q-field>
+                </q-select>
+                <q-from>
+                    <q-dataset name="[gdelt-bq:full.events]"></q-dataset>
+                </q-from>
+                <q-where>
+                    <q-condition field="actor1knowngroupcode" op="isnotnull"></q-condition>
+                    <q-condition field="actiongeo_countrycode" op="equals" value="'IZ'"></q-condition>
+                    <q-condition field="monthyear" op="equals" value="201406"></q-condition>
+                </q-where>
+                <q-group-by fields="['actor1knowngroupcode']"></q-group-by>
+            </bigquery-analytic>
+        </analytic-card>
+    </analytic-dashboard>
+</template>
+
+</body>
+</html>

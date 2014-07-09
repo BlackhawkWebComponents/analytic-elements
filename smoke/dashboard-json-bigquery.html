@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>analytic-dashboard Demo</title>
+
+    <script src="../../platform/platform.js"></script>
+
+    <script src="sampleData.js"></script>
+
+    <link rel="import" href="../analytic-dashboard.html">
+    <link rel="import" href="../../core-media-query/core-media-query.html">
+    <link rel="import" href="../default-theme.html">
+    <link rel="import" href="../../bigquery-api/mock-bigquery-api.html">
+
+</head>
+<body unresolved  vertical layout>
+
+    <core-style ref="main"></core-style>
+    <core-media-query query="min-width: 900px"></core-media-query>
+
+    <analytic-dashboard ></analytic-dashboard>
+
+<script>
+
+    addEventListener('polymer-ready', function() {
+
+        var d = document.querySelector('analytic-dashboard');
+        var m = document.querySelector('core-media-query');
+
+        m.addEventListener('core-media-change', function() {
+            console.log('core-media-change', m.queryMatches);
+            d.wide = m.queryMatches;
+        });
+
+        d.dashboard = window.dashboards[1];
+
+    });
+
+</script>
+
+</body>
+</html>
