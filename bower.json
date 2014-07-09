@@ -22,7 +22,7 @@
         "polymer"
     ],
     "dependencies": {
-        "polymer": "Polymer/polymer#master",
+        "polymer": "Polymer/polymer#0.3.3",
         "core-animated-pages": "Polymer/core-animated-pages#master",
         "core-toolbar": "Polymer/core-toolbar#master",
         "core-selector": "Polymer/core-selector#master",
