@@ -45,7 +45,7 @@ Element providing ..
 @url http://bhawke.github.io/analytic-card
 -->
 <polymer-element name="analytic-card"
-                 attributes="name interactive analytic global wide globalFilters"
+                 attributes="name interactive analytic global wide"
                  vertical center center-justified layout>
     <template>
 
@@ -84,6 +84,10 @@ Element providing ..
                             <template repeat="{{cond, i in global.query.where}}">
                                 <q-condition field="{{cond.field}}" op="{{cond.op}}" value="{{cond.value}}"></q-condition>
                             </template>
+                            <template if="{{global.dateSelector}}">
+                                <q-condition field="{{global.dateSelector.field}}" op="{{global.dateSelector.op}}"
+                                             value="{{global.dateSelector.startDate}}" value2="{{global.dateSelector.endDate}}"></q-condition>
+                            </template>
                         </q-where>
                     </solr-analytic>
                 </template>
@@ -109,6 +113,10 @@ Element providing ..
                             </template>
                             <template repeat="{{cond, i in global.query.where}}">
                                 <q-condition field="{{cond.field}}" op="{{cond.op}}" value="{{cond.value}}"></q-condition>
+                            </template>
+                            <template if="{{global.dateSelector}}">
+                                <q-condition field="{{global.dateSelector.field}}" op="{{global.dateSelector.op}}"
+                                             value="{{global.dateSelector.startDate}}" value2="{{global.dateSelector.endDate}}"></q-condition>
                             </template>
                         </q-where>
                         <q-group-by fields="{{analytic.groupBy}}"></q-group-by>

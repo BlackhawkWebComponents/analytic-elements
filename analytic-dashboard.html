@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="analytic-card.html">
+<link rel="import" href="analytic-date-selector.html">
 <link rel="import" href="../solr-analytic/solr-analytic.html">
 <link rel="import" href="../bigquery-analytic/bigquery-analytic.html">
 
@@ -74,6 +75,7 @@
     .main::-webkit-scrollbar {
     display: none;
     }
+
 </core-style>
 
 <script>
@@ -108,8 +110,6 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
 
         <link rel="stylesheet" href="dashboard-themes.css">
 
-
-
         <div class="{{dashboard.theme}}-theme theme-bg-a {{ {wide: wide} | tokenList }}" dummy fit layout vertical center center-justified hero-id="punch" hero>
             <div class="dashboard-bg" relative?="{{wide}}" flex?="{{!wide}}">
 
@@ -125,7 +125,15 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
                         {{dashboard.name}}
                     </div>
                 </core-toolbar>
+
                 <section flex horizontal wrap layout>
+                    <template if="{{dashboard.global.dateSelector}}">
+                        <analytic-date-selector
+                                startDate="{{dashboard.global.dateSelector.startDate}}"
+                                endDate="{{dashboard.global.dateSelector.endDate}}">
+                        </analytic-date-selector>
+                    </template>
+
                     <content id="cards" select="analytic-card"></content>
 
                     <template repeat="{{analytic in dashboard.analytics}}">

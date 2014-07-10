@@ -6,6 +6,9 @@
             id: 'food',
             theme: 'green',
             global: {
+                dateSelector: {
+                    field:'manufacturedate_dt', op:'range', startDate: '2004-01-01', endDate: 'today'
+                },
                 query: {
                     where: [
                         {field:'cat',op:'equals',value:null},
