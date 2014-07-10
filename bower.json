@@ -33,6 +33,7 @@
         "core-icons": "Polymer/core-icons#master",
         "paper-icon-button": "Polymer/paper-icon-button#master",
         "paper-shadow": "Polymer/paper-shadow#master",
-        "solr-analytic":"BlackhawkWebComponents/solr-analytic"
+        "solr-analytic":"BlackhawkWebComponents/solr-analytic",
+        "bigquery-analytic":"BlackhawkWebComponents/bigquery-analytic"
     }
 }
