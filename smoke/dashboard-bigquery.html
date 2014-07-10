@@ -10,21 +10,20 @@
     <link rel="import" href="../../bigquery-api/mock-bigquery-api.html">
     <link rel="import" href="../../core-media-query/core-media-query.html">
     <link rel="import" href="../default-theme.html">
-
+    <link rel="import" href="../app-globals.html">
 </head>
 <body unresolved  vertical layout>
 
 <template is="auto-binding">
-
+    <app-globals id="globals"></app-globals>
     <core-style ref="main"></core-style>
     <core-media-query query="min-width: 900px" queryMatches="{{wide}}"></core-media-query>
 
     <analytic-dashboard wide="{{wide}}">
 
-        <!-- TODO: parameratize url, cloudfortressinc.com -->
         <analytic-card name="By Actor1 Group In Iraq" interactive="true">
             <bigquery-analytic
-                    projectId="blackhawk-website"
+                    projectId="{{$.globals.projectId}}"
                     chartType="Bar">
                 <q-select>
                     <q-field expr="actor1knowngroupcode"></q-field>

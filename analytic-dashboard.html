@@ -25,55 +25,55 @@
     }
 
     .wide .dashboard-bg {
-    width: 512px;
-    height: 512px;
+        width: 512px;
+        height: 512px;
     }
 
     .dashboard-bg > core-icon {
-    position: absolute !important;
+        position: absolute !important;
     }
 
     .main-button {
-    position: absolute;
-    top: 12px;
-    left: 8px;
-    fill: #424242;
-    z-index: 10000;
+        position: absolute;
+        top: 12px;
+        left: 8px;
+        fill: #424242;
+        z-index: 10000;
     }
 
     .main-button.wide {
-    position: fixed;
-    top: 12px;
-    left: 16px;
-    fill: #424242;
+        position: fixed;
+        top: 12px;
+        left: 16px;
+        fill: #424242;
     }
 
     .title {
-    padding-left: 56px;
-    font-size: 16px;
+        padding-left: 56px;
+        font-size: 16px;
     }
 
     .wide .title {
-    padding: 0;
+        padding: 0;
     }
 
     .scroll {
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
     }
 
     .wide > .main-button {
-    top: 12px;
-    left: 16px;
+        top: 12px;
+        left: 16px;
     }
 
     .main {
-    position: relative;
+        position: relative;
     }
 
     .main::-webkit-scrollbar {
-    display: none;
+        display: none;
     }
 
 </core-style>
@@ -104,11 +104,13 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
 <polymer-element
         name="analytic-dashboard"
         attributes="dashboard selected wide" vertical layout
+        on-analytic-dashboard-control-change="{{queryUpdated}}"
         on-analytic-item-selected="{{analyticItemSelected}}">
     <template>
         <core-style ref="analytic-dashboard"></core-style>
 
         <link rel="stylesheet" href="dashboard-themes.css">
+
 
         <div class="{{dashboard.theme}}-theme theme-bg-a {{ {wide: wide} | tokenList }}" dummy fit layout vertical center center-justified hero-id="punch" hero>
             <div class="dashboard-bg" relative?="{{wide}}" flex?="{{!wide}}">
@@ -126,7 +128,28 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
                     </div>
                 </core-toolbar>
 
+                <section flex>
+                    <div layout vertical>
+                        <content select="analytic-date-selector"></content>
+                        <template if="{{dashboard.global.dateSelector}}">
+                            <analytic-date-selector
+                                    startDate="{{dashboard.global.dateSelector.startDate}}"
+                                    endDate="{{dashboard.global.dateSelector.endDate}}">
+                            </analytic-date-selector>
+                        </template>
+                    </div>
+                    <div flex horizontal wrap layout>
+                        <content id="cards" select="analytic-card"></content>
+
+                        <template repeat="{{analytic in dashboard.analytics}}">
+                            <analytic-card analytic="{{analytic}}" global="{{dashboard.global}}" wide="{{wide}}" query="{{query}}"></analytic-card>
+                        </template>
+                    </div>
+                </section>
+
+                <!--
                 <section flex horizontal wrap layout>
+                    <content select="analytic-date-selector"></content>
                     <template if="{{dashboard.global.dateSelector}}">
                         <analytic-date-selector
                                 startDate="{{dashboard.global.dateSelector.startDate}}"
@@ -139,7 +162,8 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
                     <template repeat="{{analytic in dashboard.analytics}}">
                         <analytic-card analytic="{{analytic}}" global="{{dashboard.global}}" wide="{{wide}}"></analytic-card>
                     </template>
-                </section>
+                </section>-->
+
             </div>
 
             <paper-icon-button class="main-button {{ {'theme-color': !wide, wide: wide} | tokenList }}" icon="arrow-back"  on-tap="{{mainAction}}" hero?="{{parentElement.selected === 'dashboards'}}" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}"></paper-icon-button>
@@ -157,6 +181,7 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
 
             created: function() {
                 this.g = CoreStyle.g;
+                this.query = {};
             },
             wideChanged: function() {
                 if (this.wide)
@@ -173,7 +198,49 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
             },
             mainAction: function() {
                 this.fire('main');
+            },
+
+            /**
+             * The `queryUpdated` method is the callback for whenever the
+             * `analytics-dashboard-control-change` event is fired. It updates the
+             * query attribute, which is then sent to child charts.
+             *
+             * @method queryUpdated
+             * @param {CustomEvent} event - The event with the query data.
+             */
+            queryUpdated: function(event, details) {
+                console.log('queryUpdated', details);
+                if (details.startDate)
+                    this.query.startDate = details.startDate;
+                if (details.endDate)
+                    this.query.endDate = details.endDate;
+                /**
+                // Update `this.query` with the passed event data.
+                Object.keys(event.detail).forEach(function(key) {
+                    this.query[key] = event.detail[key];
+                }.bind(this))
+
+                this.updateChildren();
+                **/
+            },
+
+            /**
+             * The `updateChildren` method updates each of this dashboards
+             * `<analytic-card>` element with its current query value.
+             *
+             * @method updateChildren
+             */
+            updateChildren: function() {
+
+                /**
+                var charts = this.querySelectorAll('analytic-card');
+                for (var i = 0, chart; chart = charts[i]; i++) {
+                    Object.keys(this.query).forEach(function(key) {
+                        chart[key] = this.query[key];
+                    }.bind(this));
+                }**/
             }
+
 
         });
     </script>

@@ -20,7 +20,6 @@
                 {
                     type: 'solr',
                     name: 'By Category',
-                    baseUrl: 'http://localhost:8983/solr/',
                     chartType: 'Bar',
                     limit: 8,
                     target:'cat',
@@ -32,7 +31,6 @@
                 {
                     type: 'solr',
                     name: 'By Manufacturer',
-                    baseUrl: 'http://localhost:8983/solr/',
                     chartType: 'Doughnut',
                     limit: 8,
                     target:'manu_id_s',
@@ -51,7 +49,6 @@
                 {
                     type: 'bigquery',
                     name: 'Iraq - Actor1 Groups June 2014',
-                    projectId: 'blackhawk-website',
                     chartType: 'Bar',
                     limit: 8,
                     query: {

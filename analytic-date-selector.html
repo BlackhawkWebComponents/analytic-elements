@@ -9,22 +9,9 @@
         margin: 16px;
         border-radius: 2px;
     }
-    .control {
-        display: inline-block;
-        margin-top: 6px;
-        margin-bottom: 6px;
-        margin-left: 6px;
-        margin-right: 4px;
-    }
-    .control:last-child {
-        margin-right: 0;
-    }
-    .control > label {
-        display: block;
-        padding: 0 0 .4em 2px;
-    }
     label {
         font-weight: bold;
+        padding: 0 0 .4em 2px;
     }
     input {
         color: inherit;
@@ -44,6 +31,19 @@
         border-color: #4d90fe;
         outline: 0;
     }
+
+    .controlContainer {
+        padding-left:6px;
+        padding-top:6px;
+        padding-bottom:6px;
+        padding-right:6px;
+    }
+
+    .controlContainer > div {
+        padding: 6px;:width;
+    }
+
+
 
 </core-style>
 
@@ -87,25 +87,26 @@ Element for selecting the start and end date values for queries inside a
 
         <paper-shadow z="1"></paper-shadow>
 
-        <div class="control" layout horizontal center stretch>
-            <span class="control">
+        <div class="controlContainer" layout horizontal>
+            <div layout vertical>
                 <label for="startDate">Start Date</label>
                 <input
-                  id="startDate"
-                  type="date"
-                  value="{{startDate}}"
-                  min="{{minStartDate}}"
-                  max="{{endDate}}">
-            </span>
-            <span class="control">
+                        id="startDate"
+                        type="date"
+                        value="{{startDate}}"
+                        min="{{minStartDate}}"
+                        max="{{endDate}}">
+            </div>
+            <div layout vertical>
                 <label for="endDate">End Date</label>
                 <input
-                  id="endDate"
-                  type="date"
-                  value="{{endDate}}"
-                  min="{{startDate}}"
-                  max="{{maxEndDate}}">
-            </span>
+                        id="endDate"
+                        type="date"
+                        value="{{endDate}}"
+                        min="{{startDate}}"
+                        max="{{maxEndDate}}">
+            </div>
+
         </div>
 
     </template>
@@ -149,7 +150,7 @@ Element for selecting the start and end date values for queries inside a
                  * @default 'yesterday'
                  * @type string
                  */
-                endDate: convertDate('yesterday'),
+                endDate: convertDate('today'),
 
                 /**
                  * The `minStartDate` attribute is used as the `min` attribute on the
@@ -174,17 +175,31 @@ Element for selecting the start and end date values for queries inside a
                 startDateChanged: function (old, cur) {
                     this.startDate = convertDate(cur);
                     this.$.startDate.value = this.startDate;
-                    this.fire('analytics-dashboard-control-change', {
-                        startDate: this.startDate
-                    });
+
+                    //before we fire, make sure date is after min and before max
+                    var d = new Date(this.startDate);
+                    var min = new Date(this.minStartDate);
+                    var max = new Date(this.maxEndDate);
+                    if (d >= min && d <= max) {
+                        this.fire('analytic-dashboard-control-change', {
+                            startDate: this.startDate
+                        });
+                    }
                 },
 
                 endDateChanged: function (old, cur) {
                     this.endDate = convertDate(cur);
                     this.$.endDate.value = this.endDate;
-                    this.fire('analytics-dashboard-control-change', {
-                        endDate: this.endDate
-                    });
+
+                    //before we fire, make sure date is after min and before max
+                    var d = new Date(this.endDate);
+                    var min = new Date(this.minStartDate);
+                    var max = new Date(this.maxEndDate);
+                    if (d >= min && d <= max) {
+                        this.fire('analytic-dashboard-control-change', {
+                            endDate: this.endDate
+                        });
+                    }
                 }
             });
 
@@ -206,7 +221,8 @@ Element for selecting the start and end date values for queries inside a
                 } else if (str == 'yesterday') {
                     return daysAgo(1)
                 } else {
-                    throw new Error('Cannot convert date ' + str);
+                    console.error('cannot convert date ' + str);
+                    //throw new Error('Cannot convert date ' + str);
                 }
             }
 

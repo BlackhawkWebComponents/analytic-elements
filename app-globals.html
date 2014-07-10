@@ -1,0 +1,20 @@
+<polymer-element name="app-globals">
+    <script>
+        (function() {
+            var projectId = 'blackhawk-website';
+            var solrUrl;
+            if (window.location.hostname === 'localhost')
+                solrUrl = 'http://localhost:8983/solr/';
+            else
+                solrUrl = 'http://cloudfortressinc.com:8983/solr/';
+
+
+            Polymer('app-globals', {
+                ready: function() {
+                    this.solrUrl = solrUrl;
+                    this.projectId = projectId;
+                }
+            });
+        })();
+    </script>
+</polymer-element>

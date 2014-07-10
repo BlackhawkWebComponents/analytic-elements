@@ -2,6 +2,8 @@
 <link rel="import" href="../core-icons/core-icons.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-shadow/paper-shadow.html">
+
+<link rel="import" href="app-globals.html">
 <link rel="import" href="../core-style/core-style.html">
 <link rel="import" href="../solr-analytic/solr-analytic.html">
 <link rel="import" href="../bigquery-analytic/bigquery-analytic.html">
@@ -20,7 +22,6 @@
     paper-icon-button {
         vertical-align: middle;
     }
-
 
     .header {
         padding-bottom:4px;
@@ -45,10 +46,10 @@ Element providing ..
 @url http://bhawke.github.io/analytic-card
 -->
 <polymer-element name="analytic-card"
-                 attributes="name interactive analytic global wide"
+                 attributes="name interactive analytic global wide query"
                  vertical center center-justified layout>
     <template>
-
+        <app-globals id="globals"></app-globals>
         <core-style ref="analytic-card"></core-style>
 
         <paper-shadow z="1"></paper-shadow>
@@ -64,7 +65,7 @@ Element providing ..
                 <content id="analytic"></content>
                 <template if="{{analytic.type == 'solr'}}">
                     <solr-analytic analytic
-                                   baseUrl="{{analytic.baseUrl}}"
+                                   baseUrl="{{$.globals.solrUrl}}"
                                    chartType="{{analytic.chartType}}"
                                    limit="{{analytic.limit}}"
                                    target="{{analytic.target}}"
@@ -86,7 +87,7 @@ Element providing ..
                             </template>
                             <template if="{{global.dateSelector}}">
                                 <q-condition field="{{global.dateSelector.field}}" op="{{global.dateSelector.op}}"
-                                             value="{{global.dateSelector.startDate}}" value2="{{global.dateSelector.endDate}}"></q-condition>
+                                             value="{{query.startDate}}" value2="{{query.endDate}}"></q-condition>
                             </template>
                         </q-where>
                     </solr-analytic>
@@ -94,7 +95,7 @@ Element providing ..
                 <template if="{{analytic.type == 'bigquery'}}">
                     <bigquery-analytic
                             analytic
-                            projectId="{{analytic.projectId}}"
+                            projectId="{{$.globals.projectId}}"
                             chartType="{{analytic.chartType}}"
                             limit="{{analytic.limit}}"
                             target="{{analytic.target}}"
@@ -116,7 +117,7 @@ Element providing ..
                             </template>
                             <template if="{{global.dateSelector}}">
                                 <q-condition field="{{global.dateSelector.field}}" op="{{global.dateSelector.op}}"
-                                             value="{{global.dateSelector.startDate}}" value2="{{global.dateSelector.endDate}}"></q-condition>
+                                             value="{{query.startDate}}" value2="{{query.endDate}}"></q-condition>
                             </template>
                         </q-where>
                         <q-group-by fields="{{analytic.groupBy}}"></q-group-by>
