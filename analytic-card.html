@@ -29,7 +29,6 @@
         padding-left: 16px;
         padding-right:8px;
     }
-
 </core-style>
 
 <!--
@@ -67,6 +66,7 @@ Element providing ..
                     <solr-analytic analytic
                                    baseUrl="{{$.globals.solrUrl}}"
                                    chartType="{{analytic.chartType}}"
+                                   height="{{chartHeight}}"
                                    limit="{{analytic.limit}}"
                                    target="{{analytic.target}}"
                                    on-analytic-item-selected="{{analyticItemSelected}}">
@@ -97,6 +97,7 @@ Element providing ..
                             analytic
                             projectId="{{$.globals.projectId}}"
                             chartType="{{analytic.chartType}}"
+                            height="{{chartHeight}}"
                             limit="{{analytic.limit}}"
                             target="{{analytic.target}}"
                             on-analytic-item-selected="{{analyticItemSelected}}">
@@ -132,6 +133,7 @@ Element providing ..
             name: '',
             interactive:false,
             analytic: null,
+            chartHeight:'250px',
             analyticChanged: function() {
                 if (this.analytic != null) {
                     this.name = this.analytic.name;
