@@ -240,7 +240,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 /* lightgrey theme */
 .lightgrey-theme /deep/ .theme-bg,
                    .lightgrey-theme.theme-bg {
-                       background-color: #999999;
+                       background-color: #555353;
                        color: #eee;
                        fill: #eee;
                    }
@@ -256,15 +256,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                    }
 
 .lightgrey-theme /deep/ .theme-primary-color {
-                       color: #999999;
+                       color: #555353;
                    }
 
 .lightgrey-theme /deep/ .theme-icon {
-                       fill: #999999;
+                       fill: #555353;
                    }
 
 .lightgrey-theme /deep/ .theme-border-color {
-                       border-color: #999999;
+                       border-color: #555353;
                    }
 
 .lightgrey-theme /deep/ paper-progress::shadow #progressContainer {
@@ -272,5 +272,5 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                    }
 
 .lightgrey-theme /deep/ paper-progress::shadow #activeProgress {
-                       background-color: #999999;
+                       background-color: #555353;
                    }

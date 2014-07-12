@@ -4,6 +4,9 @@
 <link rel="import" href="../solr-analytic/solr-analytic.html">
 <link rel="import" href="../bigquery-analytic/bigquery-analytic.html">
 
+<!-- needed for bigquery -->
+<link rel="import" href="../google-signin/google-signin.html">
+
 <core-style id="analytic-dashboard">
     section {
         overflow: auto;
@@ -76,6 +79,9 @@
         display: none;
     }
 
+    google-signin {
+        padding-right: 8px;
+    }
 </core-style>
 
 <script>
@@ -122,10 +128,21 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
 
             <div flex vertical layout slide-up-offscreen?="{{parentElement.selected === 'dashboard'}}"  cross-fade="{{!wide && parentElement.selected !== 'dashboard'}}" class="card {{ {wide: wide} | tokenList }}" relative>
                 <core-toolbar class="{{dashboard.theme}}-theme theme-bg">
-                    <div class="title">
-                        <core-icon size="48" icon="drive-fusiontable" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}" cross-fade="{{parentElement.selected !== 'dashboard'}}"></core-icon>
-                        {{dashboard.name}}
+                    <div layout horizontal center flex>
+                        <div class="title">
+                            <core-icon size="48" icon="drive-fusiontable" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}" cross-fade="{{parentElement.selected !== 'dashboard'}}"></core-icon>
+                            <span>{{dashboard.name}}</span>
+
+
+                        </div>
+                        <div flex></div>
+                        <google-signin
+                                clientId="616981594512-9qhbmltja9bhuoh1rfl2mesej0qqj6b8.apps.googleusercontent.com"
+                                scopes="https://www.googleapis.com/auth/bigquery">
+                        </google-signin>
                     </div>
+
+
                 </core-toolbar>
 
                 <section flex>
@@ -142,27 +159,15 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
                         <content id="cards" select="analytic-card"></content>
 
                         <template repeat="{{analytic in dashboard.analytics}}">
-                            <analytic-card analytic="{{analytic}}" global="{{dashboard.global}}" wide="{{wide}}" query="{{query}}"></analytic-card>
+                            <analytic-card analytic="{{analytic}}"
+                                           global="{{dashboard.global}}"
+                                           wide="{{wide}}"
+                                           authorized="{{authorized}}"
+                                           query="{{query}}">
+                           </analytic-card>
                         </template>
                     </div>
                 </section>
-
-                <!--
-                <section flex horizontal wrap layout>
-                    <content select="analytic-date-selector"></content>
-                    <template if="{{dashboard.global.dateSelector}}">
-                        <analytic-date-selector
-                                startDate="{{dashboard.global.dateSelector.startDate}}"
-                                endDate="{{dashboard.global.dateSelector.endDate}}">
-                        </analytic-date-selector>
-                    </template>
-
-                    <content id="cards" select="analytic-card"></content>
-
-                    <template repeat="{{analytic in dashboard.analytics}}">
-                        <analytic-card analytic="{{analytic}}" global="{{dashboard.global}}" wide="{{wide}}"></analytic-card>
-                    </template>
-                </section>-->
 
             </div>
 
@@ -178,8 +183,12 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
             //selected: 'front',
             //selectedItem: null,
             wide: false,
-
+            authorized: false,
             created: function() {
+                document.addEventListener('google-signin-success', function(event) {
+                    //console.log('google-signing-success');
+                    this.authorized = true;
+                }.bind(this));
                 this.g = CoreStyle.g;
                 this.query = {};
             },
@@ -209,7 +218,7 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
              * @param {CustomEvent} event - The event with the query data.
              */
             queryUpdated: function(event, details) {
-                console.log('queryUpdated', details);
+                //console.log('queryUpdated', details);
                 if (details.startDate)
                     this.query.startDate = details.startDate;
                 if (details.endDate)

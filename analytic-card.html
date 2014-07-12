@@ -45,7 +45,7 @@ Element providing ..
 @url http://bhawke.github.io/analytic-card
 -->
 <polymer-element name="analytic-card"
-                 attributes="name interactive analytic global wide query"
+                 attributes="name interactive analytic global wide query authorized"
                  vertical center center-justified layout>
     <template>
         <app-globals id="globals"></app-globals>
@@ -55,6 +55,10 @@ Element providing ..
 
         <div vertical layout fit>
             <div class="header" horizontal layout center>
+                <!--<google-signin
+                        clientId="616981594512-9qhbmltja9bhuoh1rfl2mesej0qqj6b8.apps.googleusercontent.com"
+                        scopes="https://www.googleapis.com/auth/bigquery">
+                </google-signin>-->
                 <div class="title" flex>{{name}}</div>
                 <div layout horizontal end-justified>
                     <paper-icon-button icon="refresh" on-tap="{{reset}}"></paper-icon-button>
@@ -100,7 +104,8 @@ Element providing ..
                             height="{{chartHeight}}"
                             limit="{{analytic.limit}}"
                             target="{{analytic.target}}"
-                            on-analytic-item-selected="{{analyticItemSelected}}">
+                            on-analytic-item-selected="{{analyticItemSelected}}"
+                            authorized="{{authorized}}">
                         <q-select>
                             <template repeat="{{analytic.query.select}}">
                                 <q-field expr="{{expr}}" as="{{as}}"></q-field>
@@ -121,7 +126,7 @@ Element providing ..
                                              value="{{query.startDate}}" value2="{{query.endDate}}"></q-condition>
                             </template>
                         </q-where>
-                        <q-group-by fields="{{analytic.groupBy}}"></q-group-by>
+                        <q-group-by fields="{{analytic.query.groupBy}}"></q-group-by>
                     </bigquery-analytic>
                 </template>
             </div>
@@ -134,6 +139,7 @@ Element providing ..
             interactive:false,
             analytic: null,
             chartHeight:'250px',
+            authorized: false,
             analyticChanged: function() {
                 if (this.analytic != null) {
                     this.name = this.analytic.name;

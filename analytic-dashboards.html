@@ -14,10 +14,8 @@
   <div class="dashboards-panel" flex>
 
     <core-toolbar class="dashboard-toolbar" slide-down?="{{parentElement.selected !== 'dashboard' && parentElement.lastSelected !== 'dashboard'}}">
-
       <core-icon icon="drive-fusiontable" size="64" class="topeka-avatar"></core-icon>
       <div flex>Analytics App</div>
-
     </core-toolbar>
 
     <core-selector class="dashboard-list content {{ {wide: wide} | tokenList }}" selected="{{selected}}" tile-cascade?="{{parentElement.selected !== 'dashboard' && parentElement.lastSelected !== 'dashboard'}}" fade?="{{parentElement.lastSelected === 'splash'}}">
@@ -109,7 +107,7 @@
     },
 
     selectedChanged: function() {
-        console.log('selectedChanged: ' + this.selected);
+        //console.log('selectedChanged: ' + this.selected);
       // first one is leaderboard, last one is profile
       if (this.selected === 0) {
         this.dashboard = {name: 'leaderboard'};

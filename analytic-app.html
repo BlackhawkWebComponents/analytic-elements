@@ -76,28 +76,28 @@
                 },
 
                 startup: function() {
-                    console.log('in startup');
+                    //console.log('in startup');
                     var elapsed = Date.now() - this.readyTime;
                     var t = this.minSplashTime - elapsed;
                     this.async('completeStartup', null, t > 0 ? t : 0);
                 },
 
                 completeStartup: function() {
-                    console.log('completeStartup');
+                    //console.log('completeStartup');
                     this.selected = 'dashboards';
                 },
 
                 showDashboards: function() {
-                    console.log('showDashboards');
+                    //console.log('showDashboards');
                     this.selected = 'dashboards';
                 },
 
                 showDashboard: function() {
-                    console.log('showDashboard');
+                    //console.log('showDashboard');
                     this.selected = 'dashboard';
                 },
                 dashboardSelect: function() {
-                    console.log('dashboardSelect called', this.dashboard);
+                    //console.log('dashboardSelect called', this.dashboard);
                     this.showDashboard();
                 },
 
@@ -106,7 +106,7 @@
                 },
 
                 transitionEndAction: function() {
-                    console.log('transitionEndAction');
+                    //console.log('transitionEndAction');
 
                 }
 

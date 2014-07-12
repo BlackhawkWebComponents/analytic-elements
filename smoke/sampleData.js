@@ -45,6 +45,7 @@
             name: 'BigQuery Dashboard',
             id: 'knowledge',
             theme: 'lightgrey',
+            googleSignin: true,
             analytics: [
                 {
                     type: 'bigquery',
@@ -59,7 +60,7 @@
                             {field:'actiongeo_countrycode',op:'equals',value:"'IZ'"},
                             {field:'monthyear',op:'equals',value:'201406'}
                         ],
-                        groupBy: "['actor1knowngroupcode']"
+                        groupBy: ['actor1knowngroupcode']
                     }
                 }
             ]
