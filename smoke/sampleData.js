@@ -50,7 +50,9 @@
                 query: {
                     where: [
                         {field:'actor1name',op:'equals',value:null},
-                        {field:'actor2name',op:'equals',value:null}
+                        {field:'quadclassdescription',op:'equals',value:null},
+                        {field:'event',op:'equals',value:null},
+                        {field:'actiongeo_fullname',op:'equals',value:null}
                     ]
                 }
             },
@@ -60,6 +62,7 @@
                     name: 'By Actor 1',
                     chartType: 'Bar',
                     limit: 10,
+                    target:'actor1name',
                     query: {
                         select: [{expr:'top(actor1name, 10)', as:'actor1'},{expr:'count(*)',as:'count'}],
                         from: '[gdelt.iraq_events_2014]',
@@ -74,11 +77,12 @@
                     chartType: 'PolarArea',
                     limit: 10,
                     showLegend: true,
+                    target:'quadclassdescription',
                     query: {
-                        select: [{expr:'top(QuadClassDescription, 10)'},{expr:'count(*)',as:'count'}],
+                        select: [{expr:'top(quadclassdescription, 10)'},{expr:'count(*)',as:'count'}],
                         from: '[gdelt.iraq_events_2014]',
                         where: [
-                            {field:'QuadClassDescription',op:'isnotnull'}
+                            {field:'quadclassdescription',op:'isnotnull'}
                         ]
                     }
                 },
@@ -87,12 +91,13 @@
                     name: 'By Event Type',
                     chartType: 'Pie',
                     showLegend: true,
+                    target: 'event',
                     limit: 10,
                     query: {
-                        select: [{expr:'top(Event, 10)'},{expr:'count(*)',as:'count'}],
+                        select: [{expr:'top(event, 10)'},{expr:'count(*)',as:'count'}],
                         from: '[gdelt.iraq_events_2014]',
                         where: [
-                            {field:'Event',op:'isnotnull'}
+                            {field:'event',op:'isnotnull'}
                         ]
                     }
                 },
@@ -101,11 +106,12 @@
                     name: 'By Location',
                     chartType: 'Doughnut',
                     limit: 10,
+                    target: 'actiongeo_fullname',
                     query: {
-                        select: [{expr:'top(ActionGeo_FullName, 10)', as:'location'},{expr:'count(*)',as:'count'}],
+                        select: [{expr:'top(actiongeo_fullname, 10)', as:'location'},{expr:'count(*)',as:'count'}],
                         from: '[gdelt.iraq_events_2014]',
                         where: [
-                            {field:'ActionGeo_FullName',op:'isnotnull'}
+                            {field:'actiongeo_fullname',op:'isnotnull'}
                         ]
                     }
                 }
