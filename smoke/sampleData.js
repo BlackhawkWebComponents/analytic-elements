@@ -38,6 +38,17 @@
                         select: [{expr:'manu_id_s'}],
                         from: 'collection1'
                     }
+                },
+                {
+                    type: 'solr',
+                    name: 'By Category',
+                    chartType: 'Line',
+                    limit: 8,
+                    target:'cat',
+                    query: {
+                        select: [{expr:'cat'}],
+                        from: 'collection1'
+                    }
                 }
             ]
         },
@@ -52,7 +63,8 @@
                         {field:'actor1name',op:'equals',value:null},
                         {field:'quadclassdescription',op:'equals',value:null},
                         {field:'event',op:'equals',value:null},
-                        {field:'actiongeo_fullname',op:'equals',value:null}
+                        {field:'actiongeo_fullname',op:'equals',value:null},
+                        {field:'monthyear',op:'equals',value:null,type:'integer'}
                     ]
                 }
             },
@@ -99,6 +111,20 @@
                         where: [
                             {field:'event',op:'isnotnull'}
                         ]
+                    }
+                },
+                {
+                    type: 'bigquery',
+                    name: 'By Month',
+                    chartType: 'Line',
+                    target: 'monthyear',
+                    query: {
+                        select: [{expr:'monthyear'},{expr:'count(*)',as:'count'}],
+                        from: '[gdelt.iraq_events_2014]',
+                        where: [
+                            {field:'monthyear',op:'isnotnull'}
+                        ],
+                        groupBy: ['monthyear']
                     }
                 },
                 {

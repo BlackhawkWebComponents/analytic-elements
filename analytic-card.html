@@ -172,6 +172,8 @@ Element providing ..
                 if (this.global) {
                     var target = sender.target;
                     var val = detail.items[0].label;
+                    if (val == null)
+                        console.log('val in selected is null, TODO: fix this for line charts');
                     for (var i = 0; i < this.global.query.where.length; ++i) {
                         var cond = this.global.query.where[i];
                         //console.log('cond: ' + JSON.stringify(cond, null, 2));
