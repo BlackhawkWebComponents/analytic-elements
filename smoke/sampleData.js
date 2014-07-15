@@ -42,25 +42,71 @@
             ]
         },
         {
-            name: 'BigQuery Dashboard',
+            name: 'Iraq Events 2014',
             id: 'knowledge',
             theme: 'lightgrey',
             googleSignin: true,
+            global: {
+                query: {
+                    where: [
+                        {field:'actor1name',op:'equals',value:null},
+                        {field:'actor2name',op:'equals',value:null}
+                    ]
+                }
+            },
             analytics: [
                 {
                     type: 'bigquery',
-                    name: 'Iraq - Actor1 Groups June 2014',
+                    name: 'By Actor 1',
                     chartType: 'Bar',
-                    limit: 8,
+                    limit: 10,
                     query: {
-                        select: [{expr:'actor1knowngroupcode'},{expr:'count(*)',as:'actor1_knowngroup_count'}],
-                        from: '[gdelt-bq:full.events]',
+                        select: [{expr:'top(actor1name, 10)', as:'actor1'},{expr:'count(*)',as:'count'}],
+                        from: '[gdelt.iraq_events_2014]',
                         where: [
-                            {field:'actor1knowngroupcode',op:'isnotnull'},
-                            {field:'actiongeo_countrycode',op:'equals',value:"'IZ'"},
-                            {field:'monthyear',op:'equals',value:'201406'}
-                        ],
-                        groupBy: ['actor1knowngroupcode']
+                            {field:'actor1name',op:'isnotnull'}
+                        ]
+                    }
+                },
+                {
+                    type: 'bigquery',
+                    name: 'By Quad Class',
+                    chartType: 'PolarArea',
+                    limit: 10,
+                    showLegend: true,
+                    query: {
+                        select: [{expr:'top(QuadClassDescription, 10)'},{expr:'count(*)',as:'count'}],
+                        from: '[gdelt.iraq_events_2014]',
+                        where: [
+                            {field:'QuadClassDescription',op:'isnotnull'}
+                        ]
+                    }
+                },
+                {
+                    type: 'bigquery',
+                    name: 'By Event Type',
+                    chartType: 'Pie',
+                    showLegend: true,
+                    limit: 10,
+                    query: {
+                        select: [{expr:'top(Event, 10)'},{expr:'count(*)',as:'count'}],
+                        from: '[gdelt.iraq_events_2014]',
+                        where: [
+                            {field:'Event',op:'isnotnull'}
+                        ]
+                    }
+                },
+                {
+                    type: 'bigquery',
+                    name: 'By Location',
+                    chartType: 'Doughnut',
+                    limit: 10,
+                    query: {
+                        select: [{expr:'top(ActionGeo_FullName, 10)', as:'location'},{expr:'count(*)',as:'count'}],
+                        from: '[gdelt.iraq_events_2014]',
+                        where: [
+                            {field:'ActionGeo_FullName',op:'isnotnull'}
+                        ]
                     }
                 }
             ]
