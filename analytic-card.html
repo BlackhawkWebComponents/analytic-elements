@@ -168,15 +168,15 @@ Element providing ..
              * TODO: make it so we don't have to treat each scenario differently, unify model
              */
             analyticItemSelected : function(event, detail, sender) {
-                console.log('analyticItemSelected: ' + JSON.stringify(detail, null, 2));
+                //console.log('analyticItemSelected: ' + JSON.stringify(detail, null, 2));
                 if (this.global) {
                     var target = sender.target;
                     var val = detail.items[0].label;
                     for (var i = 0; i < this.global.query.where.length; ++i) {
                         var cond = this.global.query.where[i];
-                        console.log('cond: ' + JSON.stringify(cond, null, 2));
+                        //console.log('cond: ' + JSON.stringify(cond, null, 2));
                         if (cond.field === target) {
-                            console.log('cond.field = target, setting cond.value to ' + val);
+                            //console.log('cond.field = target, setting cond.value to ' + val);
                             cond.value = val;
                         }
                     }
