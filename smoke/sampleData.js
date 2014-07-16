@@ -64,7 +64,10 @@
                         {field:'quadclassdescription',op:'equals',value:null},
                         {field:'event',op:'equals',value:null},
                         {field:'actiongeo_fullname',op:'equals',value:null},
-                        {field:'monthyear',op:'equals',value:null,type:'integer'}
+                        {field:'monthyear',op:'equals',value:null,type:'integer'},
+                        {field:'actor1knowngroup',op:'equals',value:null},
+                        {field:'actor1ethnic',op:'equals',value:null},
+                        {field:'actor2name',op:'equals',value:null}
                     ]
                 }
             },
@@ -124,7 +127,8 @@
                         where: [
                             {field:'monthyear',op:'isnotnull'}
                         ],
-                        groupBy: ['monthyear']
+                        groupBy: ['monthyear'],
+                        orderBy: ['monthyear']
                     }
                 },
                 {
@@ -140,7 +144,51 @@
                             {field:'actiongeo_fullname',op:'isnotnull'}
                         ]
                     }
-                }
+                },
+                {
+                    type: 'bigquery',
+                    name: 'By Actor 1 Known Group',
+                    chartType: 'Pie',
+                    limit: 10,
+                    target:'actor1knowngroup',
+                    showLegend: true,
+                    query: {
+                        select: [{expr:'top(actor1knowngroup, 10)'},{expr:'count(*)',as:'count'}],
+                        from: '[gdelt.iraq_events_2014]',
+                        where: [
+                            {field:'actor1knowngroup',op:'isnotnull'}
+                        ]
+                    }
+                },
+                {
+                    type: 'bigquery',
+                    name: 'By Actor 1 Ethnic',
+                    chartType: 'Radar',
+                    limit: 10,
+                    target:'actor1ethnic',
+                    showLegend: true,
+                    query: {
+                        select: [{expr:'top(actor1ethnic, 10)'},{expr:'count(*)',as:'count'}],
+                        from: '[gdelt.iraq_events_2014]',
+                        where: [
+                            {field:'actor1ethnic',op:'isnotnull'}
+                        ]
+                    }
+                },
+                {
+                    type: 'bigquery',
+                    name: 'By Actor 2',
+                    chartType: 'Bar',
+                    limit: 10,
+                    target:'actor2name',
+                    query: {
+                        select: [{expr:'top(actor2name, 10)'},{expr:'count(*)',as:'count'}],
+                        from: '[gdelt.iraq_events_2014]',
+                        where: [
+                            {field:'actor2name',op:'isnotnull'}
+                        ]
+                    }
+                },
             ]
         },
         {
