@@ -76,7 +76,6 @@
                     type: 'bigquery',
                     name: 'By Actor 1',
                     chartType: 'Bar',
-                    limit: 10,
                     target:'actor1name',
                     query: {
                         select: [{expr:'top(actor1name, 10)', as:'actor1'},{expr:'count(*)',as:'count'}],
@@ -90,7 +89,6 @@
                     type: 'bigquery',
                     name: 'By Quad Class',
                     chartType: 'PolarArea',
-                    limit: 10,
                     showLegend: true,
                     target:'quadclassdescription',
                     query: {
@@ -107,7 +105,6 @@
                     chartType: 'Pie',
                     showLegend: true,
                     target: 'event',
-                    limit: 10,
                     query: {
                         select: [{expr:'top(event, 10)'},{expr:'count(*)',as:'count'}],
                         from: '[gdelt.iraq_events_2014]',
@@ -134,22 +131,32 @@
                 {
                     type: 'bigquery',
                     name: 'By Location',
-                    chartType: 'Doughnut',
-                    limit: 10,
-                    target: 'actiongeo_fullname',
+                    chartType: 'Map',
+                    limit: 25000,
                     query: {
-                        select: [{expr:'top(actiongeo_fullname, 10)', as:'location'},{expr:'count(*)',as:'count'}],
+                        select: [{expr:'actiongeo_lat', as:'lat'}, {expr:'actiongeo_long',as:'lon'}],
                         from: '[gdelt.iraq_events_2014]',
                         where: [
-                            {field:'actiongeo_fullname',op:'isnotnull'}
+                            {field:'actiongeo_lat',op:'isnotnull'},
+                            {field:'actiongeo_long',op:'isnotnull'}
                         ]
+                    },
+                    map: {
+                        lat:33.2193,
+                        lon:43.6842,
+                        zoom:5,
+                        minZoom:5,
+                        maxZoom:13,
+                        mapTileUrl:"http://{s}.tiles.mapbox.com/v3/mapbox.iraq/{z}/{x}/{y}.png",
+                        mapSourceUrl:"http://www.mapbox.com/about/maps/",
+                        mapSource:"Terms &amp; Conditions",
+                        heatmapMax:0.6
                     }
                 },
                 {
                     type: 'bigquery',
                     name: 'By Actor 1 Known Group',
                     chartType: 'Pie',
-                    limit: 10,
                     target:'actor1knowngroup',
                     showLegend: true,
                     query: {
@@ -164,7 +171,6 @@
                     type: 'bigquery',
                     name: 'By Actor 1 Ethnic',
                     chartType: 'Radar',
-                    limit: 10,
                     target:'actor1ethnic',
                     showLegend: true,
                     query: {
@@ -179,7 +185,6 @@
                     type: 'bigquery',
                     name: 'By Actor 2',
                     chartType: 'Bar',
-                    limit: 10,
                     target:'actor2name',
                     query: {
                         select: [{expr:'top(actor2name, 10)'},{expr:'count(*)',as:'count'}],
@@ -188,14 +193,28 @@
                             {field:'actor2name',op:'isnotnull'}
                         ]
                     }
-                },
+                }
             ]
         },
         {
-            name: 'Dashboard 2',
+            name: 'Test',
             id: 'history',
             theme: "blue",
-            analytics: []
+            googleSignin: true,
+            analytics: [{
+                type: 'bigquery',
+                name: 'By Location',
+                chartType: 'Map',
+                limit: 5000,
+                query: {
+                    select: [{expr:'actiongeo_lat', as:'lat'}, {expr:'actiongeo_long',as:'lon'}],
+                    from: '[gdelt.iraq_events_2014]',
+                    where: [
+                        {field:'actiongeo_lat',op:'isnotnull'},
+                        {field:'actiongeo_long',op:'isnotnull'}
+                    ]
+                }
+            }]
         },
         {
             name: 'Dashboard 3',

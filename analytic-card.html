@@ -107,7 +107,16 @@ Element providing ..
                             showLegend="{{analytic.showLegend}}"
                             target="{{analytic.target}}"
                             on-analytic-item-selected="{{analyticItemSelected}}"
-                            authorized="{{authorized}}">
+                            authorized="{{authorized}}"
+                            lat="{{analytic.map.lat}}"
+                            lon="{{analytic.map.lon}}"
+                            zoom="{{analytic.map.zoom}}"
+                            minZoom="{{analytic.map.minZoom}}"
+                            maxZoom="{{analytic.map.maxZoom}}"
+                            mapTileUrl="{{analytic.map.mapTileUrl}}"
+                            mapSourceUrl="{{analytic.map.mapSourceUrl}}"
+                            mapSource="{{analytic.map.mapSource}}"
+                            heatmapMax="{{analytic.map.heatmapMax}}">
                         <q-select>
                             <template repeat="{{analytic.query.select}}">
                                 <q-field expr="{{expr}}" as="{{as}}"></q-field>

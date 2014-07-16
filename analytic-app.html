@@ -42,7 +42,7 @@
 
             <analytic-dashboards id="dashboards" name="dashboards"
                                dashboards="{{dashboards}}" dashboard="{{dashboard}}" wide="{{wide}}"
-                               on-core-activate="{{dashboardSelect}}"></analytic-dashboards>
+                               on-core-activate="{{dashboardSelect}}" ></analytic-dashboards>
 
             <analytic-dashboard id="dashboard" name="dashboard" dashboard="{{dashboard}}" wide="{{wide}}"></analytic-dashboard>
 
@@ -54,12 +54,14 @@
 
         (function() {
 
+
             window.setAnalyticsAppTransitionSpeed = function(ms) {
                 CoreStyle.g.transitions.duration = ms + 'ms';
                 CoreStyle.g.transitions.scaleDelay = CoreStyle.g.transitions.duration;
             }
 
             setAnalyticsAppTransitionSpeed(350);
+
 
             Polymer('analytic-app', {
 
@@ -68,7 +70,6 @@
                 responsiveWidth: '900px',
 
                 minSplashTime: 1000,
-                //minSplashTime: 100,
 
                 ready: function() {
                     this.readyTime = Date.now();
@@ -76,28 +77,24 @@
                 },
 
                 startup: function() {
-                    //console.log('in startup');
                     var elapsed = Date.now() - this.readyTime;
                     var t = this.minSplashTime - elapsed;
                     this.async('completeStartup', null, t > 0 ? t : 0);
                 },
 
                 completeStartup: function() {
-                    //console.log('completeStartup');
                     this.selected = 'dashboards';
                 },
 
                 showDashboards: function() {
-                    //console.log('showDashboards');
                     this.selected = 'dashboards';
                 },
 
                 showDashboard: function() {
-                    //console.log('showDashboard');
                     this.selected = 'dashboard';
                 },
+
                 dashboardSelect: function() {
-                    //console.log('dashboardSelect called', this.dashboard);
                     this.showDashboard();
                 },
 
@@ -107,7 +104,6 @@
 
                 transitionEndAction: function() {
                     //console.log('transitionEndAction');
-
                 }
 
 

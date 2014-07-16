@@ -117,7 +117,6 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
 
         <link rel="stylesheet" href="dashboard-themes.css">
 
-
         <div class="{{dashboard.theme}}-theme theme-bg-a {{ {wide: wide} | tokenList }}" dummy fit layout vertical center center-justified hero-id="punch" hero>
             <div class="dashboard-bg" relative?="{{wide}}" flex?="{{!wide}}">
 
@@ -130,7 +129,7 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
                 <core-toolbar class="{{dashboard.theme}}-theme theme-bg">
                     <div layout horizontal center flex>
                         <div class="title">
-                            <core-icon size="48" icon="drive-fusiontable" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}" cross-fade="{{parentElement.selected !== 'dashboard'}}"></core-icon>
+                            <core-icon style="height: 48px; width: 48px;"  icon="drive-fusiontable" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}" cross-fade="{{parentElement.selected !== 'dashboard'}}"></core-icon>
                             <span>{{dashboard.name}}</span>
 
 
@@ -164,7 +163,8 @@ TODO: figure out how to bind where vals to target, look at <core-bind>
                                            wide="{{wide}}"
                                            authorized="{{authorized}}"
                                            query="{{query}}">
-                           </analytic-card>
+                            </analytic-card>
+
                         </template>
                     </div>
                 </section>
