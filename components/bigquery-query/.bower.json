@@ -1,0 +1,36 @@
+{
+  "name": "bigquery-query",
+  "homepage": "http://blackhawkwebcomponents.github.io/bigquery-query",
+  "description": "",
+  "main": "bigquery-query.html",
+  "authors": [
+    "Rob Beers"
+  ],
+  "license": "Apache2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "../"
+  ],
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "structured-query": "BlackhawkWebComponents/structured-query"
+  },
+  "_release": "8ae42f80f0",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "8ae42f80f095eacfd273f4c617569ed4734a2288"
+  },
+  "_source": "git://github.com/BlackhawkWebComponents/bigquery-query.git",
+  "_target": "*",
+  "_originalSource": "BlackhawkWebComponents/bigquery-query"
+}

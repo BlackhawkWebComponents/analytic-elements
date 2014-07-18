@@ -1,0 +1,32 @@
+{
+    "name": "analytic-base",
+    "homepage": "http://blackhawkwebcomponents.github.io/analytic-base",
+    "description": "",
+    "main": "analytic-base.html",
+    "authors": [
+        "Rob Beers"
+    ],
+    "license": "Apache2",
+    "version": "0.0.1",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests",
+        "../"
+    ],
+    "keywords": [
+        "web-component",
+        "web-components",
+        "polymer"
+    ],
+    "dependencies": {
+        "polymer": "Polymer/polymer#master",
+        "chart-js": "BlackhawkWebComponents/chart-js#master",
+        "leaflet-map": "nhnb/leaflet-map#master",
+        "leaflet-heatmap-layer": "BlackhawkWebComponents/leaflet-heatmap-layer#master",
+        "x-loading": "BlackhawkWebComponents/x-loading#master"
+
+    }
+}

@@ -1,0 +1,70 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-ajax/core-ajax.html">
+
+<!--
+Element providing non visual api to solr search restful api.
+To get around Content Security Policy, must be deployed or symlinked in
+$SOLR_HOME/example/solr-webapp/webapp or enable CORS with Jetty
+https://github.com/LucidWorks/banana/tree/release/resources/enable-cors
+
+##### Example
+
+    <solr-api
+        url="http://localhost:8983/solr/collection1/select/?wt=json&q=*:*&rows=0&facet=true&facet.field=cat"
+        auto
+    </solr-api>
+
+@element solr-api
+@blurb Element providing non visual api to solr search restful api
+@status alpha
+@url http://blackhawkwebcomponents.github.io/solr-api
+-->
+<polymer-element name="solr-api" attributes="url response auto">
+    <template>
+        <core-ajax id="solr"
+                   url="{{url}}"
+                   auto="{{auto}}"
+                   on-core-response="{{gotResponse}}"
+                   handleAs="json" ></core-ajax>
+    </template>
+    <script>
+        Polymer('solr-api', {
+            /**
+             * Fired when a response is received.
+             *
+             * @event solr-response
+             */
+
+            /**
+             * A url to the solr api.
+             * @attribute url
+             * @type string
+             */
+            url: '',
+            /**
+             * Automatically execute on url change
+             * @attribute auto
+             * @type boolean
+             */
+            auto: false,
+            ready: function () {
+                this.response = {};
+            },
+            /**
+             * Performs an Ajax request to the specified URL.
+             *
+             * @method go
+             */
+            go: function() {
+                this.$.solr.go();
+            },
+            gotResponse: function(e, detail) {
+                var resp = detail.response;
+                this.response = resp;
+                this.fire('solr-response', {response: resp});
+            }
+
+        });
+    </script>
+</polymer-element>
+

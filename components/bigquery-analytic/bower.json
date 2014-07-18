@@ -1,0 +1,29 @@
+{
+    "name": "bigquery-analytic",
+    "homepage": "http://blackhawkwebcomponents.github.io/bigquery-analytic",
+    "description": "",
+    "main": "bigquery-analytic.html",
+    "authors": [
+        "Rob Beers"
+    ],
+    "license": "Apache2",
+    "version": "0.0.1",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests",
+        "../"
+    ],
+    "keywords": [
+        "web-component",
+        "web-components",
+        "polymer"
+    ],
+    "dependencies": {
+        "polymer": "Polymer/polymer#master",
+        "bigquery-api": "BlackhawkWebComponents/bigquery-api",
+        "bigquery-query": "BlackhawkWebComponents/bigquery-query"
+    }
+}

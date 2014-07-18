@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>analytic-dashboard Demo</title>
+
+    <script src="../../platform/platform.js"></script>
+
+    <link rel="import" href="../analytic-dashboard.html">
+    <link rel="import" href="../../solr-analytic/solr-analytic.html">
+    <link rel="import" href="../../core-media-query/core-media-query.html">
+    <link rel="import" href="../default-theme.html">
+    <link rel="import" href="../app-globals.html">
+
+</head>
+<body unresolved  vertical layout>
+
+<template is="auto-binding">
+    <app-globals id="globals"></app-globals>
+    <core-style ref="main"></core-style>
+    <core-media-query query="min-width: 900px" queryMatches="{{wide}}"></core-media-query>
+
+    <analytic-dashboard wide="{{wide}}"
+            on-analytic-dashboard-control-change="{{processControlChange}}">
+
+        <analytic-date-selector
+                minStartDate="2000-01-01"
+                startDate="2004-01-01"
+                endDate="today">
+        </analytic-date-selector>
+
+        <analytic-card name="By Category" interactive="true">
+            <solr-analytic analytic
+                    baseUrl="{{$.globals.solrUrl}}"
+                    chartType="Bar"
+                    limit="8"
+                    target="{{category}}">
+                <q-select>
+                    <q-field expr="cat"></q-field>
+                </q-select>
+                <q-from>
+                    <q-dataset name="collection1"></q-dataset>
+                </q-from>
+                <q-where>
+                    <q-condition field="cat" op="equals" value="{{category}}"></q-condition>
+                    <q-condition field="manu_id_s" op="equals" value="{{manufacturer}}"></q-condition>
+                    <q-condition field="manufacturedate_dt" op="range" value="{{startDate}}" value2="{{endDate}}"></q-condition>
+                </q-where>
+            </solr-analytic>
+        </analytic-card>
+
+        <analytic-card name="By Manufacturer" interactive="true">
+            <solr-analytic
+                    analytic
+                    baseUrl="{{$.globals.solrUrl}}"
+                    chartType="Doughnut"
+                    showLegend="true"
+                    limit="8"
+                    target="{{manufacturer}}">
+                <q-select>
+                    <q-field expr="manu_id_s"></q-field>
+                </q-select>
+                <q-from>
+                    <q-dataset name="collection1"></q-dataset>
+                </q-from>
+                <q-where>
+                    <q-condition field="cat" op="equals" value="{{category}}"></q-condition>
+                    <q-condition field="manu_id_s" op="equals" value="{{manufacturer}}"></q-condition>
+                    <q-condition field="manufacturedate_dt" op="range" value="{{startDate}}" value2="{{endDate}}"></q-condition>
+                </q-where>
+            </solr-analytic>
+        </analytic-card>
+
+    </analytic-dashboard>
+
+</template>
+<script>
+    var t = document.querySelector("template");
+    t.processControlChange = function(event, details) {
+        console.log('details', JSON.stringify(details, null, 2));
+        if (details.startDate)
+            t.startDate = details.startDate;
+        if (details.endDate)
+            t.endDate = details.endDate;
+    }
+</script>
+</body>
+</html>

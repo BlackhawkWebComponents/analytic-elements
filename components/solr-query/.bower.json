@@ -1,0 +1,36 @@
+{
+  "name": "solr-query",
+  "homepage": "http://blackhawkwebcomponents.github.io/solr-query",
+  "description": "",
+  "main": "solr-query.html",
+  "authors": [
+    "Rob Beers"
+  ],
+  "license": "Apache2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "../"
+  ],
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "structured-query": "BlackhawkWebComponents/structured-query"
+  },
+  "_release": "193006ba10",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "193006ba1011fcdb44ceeab55d2dc4b0cc78e895"
+  },
+  "_source": "git://github.com/BlackhawkWebComponents/solr-query.git",
+  "_target": "*",
+  "_originalSource": "BlackhawkWebComponents/solr-query"
+}

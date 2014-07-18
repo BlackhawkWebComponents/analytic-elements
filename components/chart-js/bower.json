@@ -1,0 +1,8 @@
+{
+  "name": "chart-js",
+  "private": true,
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "chartjs": "BlackhawkWebComponents/Chart.js#master"
+  }
+}

@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>bigquery-query Demo</title>
+
+    <script src="../platform/platform.js"></script>
+    <link rel="import" href="bigquery-query.html">
+
+</head>
+<body unresolved>
+
+<template id="mytemplate" is="auto-binding">
+
+    <p>bigquery-query looks like this</p>
+
+    <bigquery-query outputQuery="{{outputQuery}}">
+        <q-select>
+            <q-field expr="actor1knowngroupcode"></q-field>
+            <q-field expr="count(*)" as="actor1_knowngroup_count"></q-field>
+        </q-select>
+        <q-from>
+            <q-dataset name="[gdelt-bq:full.events]"></q-dataset>
+        </q-from>
+        <q-where>
+            <q-condition field="actor1knowngroupcode" op="isnotnull"></q-condition>
+            <q-condition field="actiongeo_countrycode" op="equals" value="'IZ'"></q-condition>
+            <q-condition field="year" op="equals" value="2014"></q-condition>
+        </q-where>
+        <q-group-by fields="['actor1knowngroupcode']"></q-group-by>
+    </bigquery-query>
+
+    <p>Bigquery Output Query</p>
+    <pre>{{outputQuery.sql}}</pre>
+</template>
+
+
+</body>
+</html>

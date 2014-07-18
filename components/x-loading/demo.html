@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>x-loading Demo</title>
+
+    <script src="../platform/platform.js"></script>
+    <link rel="import" href="x-loading.html">
+
+</head>
+<style>
+    .container {
+        width:250px;
+        height:250px;
+        background-color:rgb(227, 227, 230);
+    }
+</style>
+<body unresolved>
+
+<template is="auto-binding">
+
+    <p>A <code>&lt;x-loading&gt;</code> looks like this:</p>
+
+    <div class="container">
+        <x-loading></x-loading>
+    </div>
+
+
+</template>
+
+<script>
+    var t = document.querySelector("template");
+    t.json = function(value) {
+        return JSON.stringify(value, null, 2);
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,99 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../structured-query/structured-query.html">
+
+<!--
+Element providing abstract query support for solr
+
+##### Example
+
+    <solr-query outputQuery="{{outputQuery}}" baseUrl="http://localhost:8983/solr/">
+        <q-select>
+            <q-field expr="name"></q-field>
+            <q-field expr="id"></q-field>
+            <q-field expr="score"></q-field>
+        </q-select>
+        <q-from>
+            <q-dataset name="collection1"></q-dataset>
+        </q-from>
+        <q-where>
+            <q-condition field="name" op="equals" value="Foo"></q-condition>
+        </q-where>
+    </solr-query>
+
+
+@element solr-query
+@blurb Element providing abstract query support for solr
+@status alpha
+@url http://blackhawkwebcomponents.github.io/solr-query
+-->
+<polymer-element name="solr-query" extends="structured-query" attributes="outputQuery baseUrl facet">
+    <template>
+        <shadow></shadow>
+    </template>
+    <script>
+        Polymer('solr-query', {
+            /**
+             * This identifies whether or not to target facets
+             * @attribute facet
+             * @type Boolean
+             * @default true
+             */
+            facet: true,
+            updateOutputQuery: function() {
+                var select='';
+                var limit='';
+                if (this.facet) {
+                    select += '&q=*:*&rows=0&facet=true';
+                    for (var i = 0; i < this.selectFields.length; ++i) {
+                        select += '&facet.field='+this.selectFields[i].expr;
+                    }
+
+                    if (this.limit != null && this.limit > 0) {
+                        limit += '&facet.limit='+this.limit;
+                    }
+                }
+
+                var dataset = this.fromDatasets[0].name;
+
+                /*
+                var facetQuery = '&facet=true';
+                for (var i = 0; i < this.whereConditions.length; ++i) {
+                    var condition  = this.whereConditions[i];
+                    if (condition.value && condition.value != null && condition.value.trim().length > 0) {
+                        if (i > 0 && this.whereConditions.length > 1)
+                            where += ' and ';
+                        //TODO: put in function with case statement
+                        var op = ':';
+                        facetQuery += "&facet.query="+condition.field + op + condition.value;
+                    }
+                }*/
+
+                var where = '';
+                for (var i = 0; i < this.whereConditions.length; ++i) {
+                    var condition  = this.whereConditions[i];
+                    if (condition.op == 'equals') {
+                        if (condition.value && condition.value != null && condition.value.trim().length > 0) {
+                            //TODO: put in function with case statement
+                            var op = ':';
+                            where += '&fq='+condition.field + op + '"'+condition.value+'"';
+                        }
+                    } else if (condition.op == 'range' && condition.value != null && condition.value2 != null) {
+                        var start_time = new Date(condition.value).toISOString();
+                        var end_time = new Date(condition.value2).toISOString();
+                        var fq = '&fq=' + condition.field + ':[' + start_time + '%20TO%20' + end_time + ']';
+                        where += fq;
+                    }
+
+                }
+
+                var debug = '';
+                if (this.debug)
+                    debug = '&indent=on';
+                var url = this.baseUrl+dataset+"/select/?wt=json"+select+where+limit+debug;
+                //console.log('url: ' + url);
+                this.outputQuery.url = url;
+            }
+        });
+    </script>
+</polymer-element>
+

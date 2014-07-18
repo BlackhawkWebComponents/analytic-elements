@@ -1,0 +1,306 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+Element providing base query support for varying datasources
+
+##### Example
+
+    <structured-query outputQuery="{{outputQuery}}">
+        <q-select>
+            <q-field expr="gndr" as="gender"></q-field>
+            <q-field expr="count(*)" as="gender_count"></field>
+        </q-select>
+        <q-from>
+            <q-dataset name="employment_records"></q-dataset>
+        </q-from>
+        <q-where>
+            <q-condition field="status" op="equals" value="employed"></q-condition>
+        </q-where>
+        <q-group-by fields="['gender']"></q-group-by>
+
+    </structured-query>
+
+@element structured-query
+@blurb Element providing base query support for varying datasources
+@status alpha
+@url http://blackhawkwebcomponents.github.io/structured-query
+-->
+<polymer-element name="structured-query"
+                 attributes="outputQuery limit debug"
+                 on-query-condition-changed="queryConditionChanged">
+    <template>
+        <content id="querySelect" select="q-select"></content>
+        <content id="queryFrom" select="q-from"></content>
+        <content id="queryWhere" select="q-where"></content>
+        <content id="queryGroupBy" select="q-group-by"></content>
+        <content id="queryOrderBy" select="q-order-by"></content>
+    </template>
+    <script>
+        Polymer('structured-query', {
+            /**
+             * Query output, structured-query outputs sql for demostrative purposes
+             * @attribute outputQuery
+             * @type object
+             */
+
+            /**
+             * Limit rows returned
+             * @attribute limit
+             * @type integer
+             * @default null
+             */
+            limit:null,
+
+            /**
+             * Set debug mode
+             * @attribute debug
+             * @type string
+             * @default false
+             */
+            debug:false,
+
+            observe: {
+                'selectFields fromDatasets whereConditions groupByFields orderByFields': 'updateQuery'
+            },
+            created: function() {
+                this.outputQuery = {};
+                this.selectFields = [];
+                this.fromDatasets = [];
+                this.whereConditions = [];
+                this.groupByFields = [];
+                this.orderByFields = [];
+            },
+            domReady: function() {
+                this.update();
+            },
+            update: function() {
+                if (this.$.querySelect.getDistributedNodes()[0])
+                    this.selectFields = this.$.querySelect.getDistributedNodes()[0].queryFields;
+                if (this.$.queryFrom.getDistributedNodes()[0])
+                    this.fromDatasets = this.$.queryFrom.getDistributedNodes()[0].fromDatasets;
+                if (this.$.queryWhere.getDistributedNodes()[0])
+                    this.whereConditions = this.$.queryWhere.getDistributedNodes()[0].whereConditions;
+                if (this.$.queryGroupBy.getDistributedNodes()[0])
+                    this.groupByFields = this.$.queryGroupBy.getDistributedNodes()[0].fields;
+                if (this.$.queryOrderBy.getDistributedNodes()[0])
+                    this.orderByFields = this.$.queryOrderBy.getDistributedNodes()[0].fields;
+                this.onMutation(this, this.update); // Watch for future updates.
+            },
+            updateQuery: function() {
+                if (this.selectFields && this.selectFields.length > 0 &&
+                        this.fromDatasets && this.fromDatasets.length > 0) {
+                    this.updateOutputQuery();
+                    this.fire('query-change', {'query': this.outputQuery});
+                }
+
+            },
+            queryConditionChanged: function(event, detail) {
+                this.updateQuery();
+            },
+            //TODO: consider putting this in sql-query and extending it which would extend structured-query
+            updateOutputQuery: function() {
+                if (!this.selectFields)
+                    return;
+
+                var select = 'select ';
+                for (var i = 0; i < this.selectFields.length; ++i) {
+                    if (i > 0 && this.selectFields.length > 1)
+                        select += ', ';
+                    var alias = '';
+                    if ( this.selectFields[i].as && this.selectFields[i].as != null && this.selectFields[i].as.length > 0)
+                        alias = ' as ' + this.selectFields[i].as;
+                    select += this.selectFields[i].expr + alias;
+                }
+
+                var from = ' from ';
+                for (var i = 0; i < this.fromDatasets.length; ++i) {
+                    if (i > 0 && this.fromDatasets.length > 1)
+                        from += ', ';
+                    from += this.fromDatasets[i].name;
+                }
+
+                var where = ' where ';
+                for (var i = 0; i < this.whereConditions.length; ++i) {
+                    var condition  = this.whereConditions[i];
+                    if ( (condition.value && condition.value != null && condition.value.trim().length > 0) ||
+                            (condition.op == 'isnotnull' || condition.op == 'isnull') ){
+                        if (i > 0 && this.whereConditions.length > 1)
+                            where += ' and ';
+                        //TODO: put in function with case statement
+                        var op;
+                        if (condition.op == 'equals')
+                            op = ' = ';
+                        else if (condition.op == 'notequals')
+                            op = ' <> ';
+                        else if (condition.op == 'isnull')
+                            op = ' is null ';
+                        else if (condition.op == 'isnotnull')
+                            op = ' is not null ';
+                        else op = ' = ';
+
+                        where += condition.field + op;
+
+                        //console.log('condition.value: ' + condition.value);
+                        if (condition.value != null) {
+                            if (condition.type == 'integer')
+                                where += condition.value;
+                            else // assume string
+                                where += "'"+condition.value+"'";
+                        }
+
+
+                    }
+                }
+
+                var groupBy = '';
+
+                if (this.groupByFields.length > 0) {
+                    groupBy = ' group by ';
+                    for (var i = 0; i < this.groupByFields.length; ++i) {
+                        if (i > 0 && this.groupByFields.length > 1)
+                            groupBy += ', ';
+                        groupBy += this.groupByFields[i];
+                    }
+                }
+
+                var orderBy = '';
+
+                if (this.orderByFields.length > 0) {
+
+                    orderBy = ' order by ';
+                    for (var i = 0; i < this.orderByFields.length; ++i) {
+                        if (i > 0 && this.orderByFields.length > 1)
+                            orderBy += ', ';
+                        orderBy += this.orderByFields[i];
+                    }
+                }
+
+                this.outputQuery.sql = select + from + where + groupBy + orderBy;
+                //console.log('this.outputQuery.sql: ' + this.outputQuery.sql);
+
+            }
+        });
+    </script>
+</polymer-element>
+
+<polymer-element name="q-select" attributes="queryFields">
+    <template>
+        <content id="queryFields" select="q-field"></content>
+    </template>
+    <script>
+        Polymer('q-select', {
+            created: function() {
+                this.queryFields = [];
+            },
+            ready: function() {
+                this.updateQueryFields();
+            },
+            updateQueryFields: function() {
+                this.queryFields = Array.prototype.slice.call(
+                        this.$.queryFields.getDistributedNodes());
+                this.onMutation(this, this.updateQueryFields); // Watch for future updates.
+            }
+        });
+    </script>
+</polymer-element>
+
+<polymer-element name="q-field" attributes="expr as">
+    <template>
+
+    </template>
+    <script>
+        Polymer('q-field', {
+            expr: null,
+            as: null
+        });
+    </script>
+</polymer-element>
+
+
+<polymer-element name="q-from" attributes="fromDatasets">
+    <template>
+        <content id="fromDatasets" select="q-dataset"></content>
+    </template>
+    <script>
+        Polymer('q-from', {
+            created: function() {
+                this.fromDatasets = [];
+            },
+            ready: function() {
+                this.updateFromDatasets();
+            },
+            updateFromDatasets: function() {
+                this.fromDatasets = Array.prototype.slice.call(
+                        this.$.fromDatasets.getDistributedNodes());
+                this.onMutation(this, this.updateFromDatasets); // Watch for future updates.
+            }
+        });
+    </script>
+</polymer-element>
+
+<polymer-element name="q-dataset" attributes="name">
+    <template></template>
+    <script>
+        Polymer('q-dataset', {
+            name: null
+        });
+    </script>
+</polymer-element>
+
+<polymer-element name="q-where" attributes="whereConditions">
+    <template>
+        <content id="whereConditions" select="q-condition"></content>
+    </template>
+    <script>
+        Polymer('q-where', {
+            created: function() {
+                this.whereConditions = [];
+            },
+            ready: function() {
+                this.updateWhereConditions();
+            },
+            updateWhereConditions: function() {
+                this.whereConditions = Array.prototype.slice.call(
+                        this.$.whereConditions.getDistributedNodes());
+                this.onMutation(this, this.updateWhereConditions); // Watch for future updates.
+            }
+        });
+    </script>
+</polymer-element>
+
+<polymer-element name="q-condition" attributes="field op value value2 type">
+    <template></template>
+    <script>
+        Polymer('q-condition', {
+            field: null,
+            op: null,
+            value: null,
+            value2: null,
+            type:'string',
+            observe: {
+                'value value2': 'processValueChange'
+            },
+            processValueChange: function() {
+                this.fire('query-condition-changed', {"field":this.field,"op":this.op,"value":this.value,"value2":this.value2});
+            }
+        });
+    </script>
+</polymer-element>
+
+<polymer-element name="q-group-by" attributes="fields">
+    <template></template>
+    <script>
+        Polymer('q-group-by', {
+            fields: []
+        });
+    </script>
+</polymer-element>
+
+<polymer-element name="q-order-by" attributes="fields">
+    <template></template>
+    <script>
+        Polymer('q-order-by', {
+            fields: []
+        });
+    </script>
+</polymer-element>

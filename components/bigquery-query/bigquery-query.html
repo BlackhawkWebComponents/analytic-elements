@@ -1,0 +1,126 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../structured-query/structured-query.html">
+
+<!--
+Element providing abstract query support for bigquery
+
+##### Example
+
+    <bigquery-query outputQuery="{{outputQuery}}">
+        <q-select>
+            <q-field expr="actor1knowngroupcode"></q-field>
+            <q-field expr="count(*)" as="actor1_knowngroup_count"></q-field>
+        </q-select>
+        <q-from>
+            <q-dataset name="[gdelt-bq:full.events]"></q-dataset>
+        </q-from>
+        <q-where>
+            <q-condition field="actor1knowngroupcode" op="isnotnull"></q-condition>
+            <q-condition field="actiongeo_countrycode" op="equals" value="'IZ'"></q-condition>
+            <q-condition field="year" op="equals" value="2014"></q-condition>
+        </q-where>
+        <q-group-by fields="['actor1knowngroupcode']"></q-group-by>
+    </bigquery-query>
+
+@element bigquery-query
+@extends structured-query
+@blurb Element providing abstract query support for bigquery
+@status alpha
+@url http://blackhawkwebcomponents.github.io/bigquery-query
+-->
+<polymer-element name="bigquery-query" extends="structured-query" attributes="outputQuery">
+    <template>
+        <shadow></shadow>
+    </template>
+    <script>
+        Polymer('bigquery-query', {
+
+            updateOutputQuery: function() {
+                if (!this.selectFields)
+                    return;
+
+                var select = 'select ';
+                for (var i = 0; i < this.selectFields.length; ++i) {
+                    if (i > 0 && this.selectFields.length > 1)
+                        select += ', ';
+                    var alias = '';
+                    if ( this.selectFields[i].as && this.selectFields[i].as != null && this.selectFields[i].as.length > 0)
+                        alias = ' as ' + this.selectFields[i].as;
+                    select += this.selectFields[i].expr + alias;
+                }
+
+                var from = ' from ';
+                for (var i = 0; i < this.fromDatasets.length; ++i) {
+                    if (i > 0 && this.fromDatasets.length > 1)
+                        from += ', ';
+                    from += this.fromDatasets[i].name;
+                }
+
+                var where = ' where ';
+                for (var i = 0; i < this.whereConditions.length; ++i) {
+                    var condition  = this.whereConditions[i];
+                    if ( (condition.value && condition.value != null && condition.value.trim().length > 0) ||
+                            (condition.op == 'isnotnull' || condition.op == 'isnull') ){
+                        if (i > 0 && this.whereConditions.length > 1)
+                            where += ' and ';
+                        //TODO: put in function with case statement
+                        var op;
+                        if (condition.op == 'equals')
+                            op = ' = ';
+                        else if (condition.op == 'notequals')
+                            op = ' <> ';
+                        else if (condition.op == 'isnull')
+                            op = ' is null ';
+                        else if (condition.op == 'isnotnull')
+                            op = ' is not null ';
+                        else op = ' = ';
+
+                        where += condition.field + op;
+
+                        //console.log('condition.value: ' + condition.value);
+                        if (condition.value != null) {
+                            if (condition.type == 'integer')
+                                where += condition.value;
+                            else // assume string
+                                where += "'"+condition.value+"'";
+                        }
+
+
+                    }
+                }
+
+                var groupBy = '';
+
+                if (this.groupByFields.length > 0) {
+                    groupBy = ' group by ';
+                    for (var i = 0; i < this.groupByFields.length; ++i) {
+                        if (i > 0 && this.groupByFields.length > 1)
+                            groupBy += ', ';
+                        groupBy += this.groupByFields[i];
+                    }
+                }
+
+                var orderBy = '';
+
+                if (this.orderByFields.length > 0) {
+
+                    orderBy = ' order by ';
+                    for (var i = 0; i < this.orderByFields.length; ++i) {
+                        if (i > 0 && this.orderByFields.length > 1)
+                            orderBy += ', ';
+                        orderBy += this.orderByFields[i];
+                    }
+                }
+
+                var limit = '';
+                if (this.limit > 0) {
+                    limit += ' limit ' + this.limit;
+                }
+                this.outputQuery.sql = select + from + where + groupBy + orderBy + limit;
+                //console.log('this.outputQuery.sql: ' + this.outputQuery.sql);
+
+            }
+        });
+    </script>
+</polymer-element>
+

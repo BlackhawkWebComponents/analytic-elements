@@ -1,0 +1,49 @@
+{
+  "name": "analytic-elements",
+  "homepage": "http://blackhawkwebcomponents.github.io/analytic-elements",
+  "description": "",
+  "main": "analytic-elements.html",
+  "authors": [
+    "Rob Beers"
+  ],
+  "license": "Apache2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "../"
+  ],
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "core-animated-pages": "Polymer/core-animated-pages#master",
+    "core-toolbar": "Polymer/core-toolbar#master",
+    "core-selector": "Polymer/core-selector#master",
+    "core-icon": "Polymer/core-icon#master",
+    "core-style": "Polymer/core-style#master",
+    "core-media-query": "Polymer/core-media-query#master",
+    "core-iconset-svg": "Polymer/core-iconset-svg#master",
+    "core-icons": "Polymer/core-icons#master",
+    "font-roboto": "Polymer/font-roboto#master",
+    "paper-icon-button": "Polymer/paper-icon-button#master",
+    "paper-shadow": "Polymer/paper-shadow#master",
+    "solr-analytic": "BlackhawkWebComponents/solr-analytic",
+    "bigquery-analytic": "BlackhawkWebComponents/bigquery-analytic"
+  },
+  "_release": "c92da7ac06",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "c92da7ac062b1273f1ac2bdb15913009db0205fd"
+  },
+  "_source": "git://github.com/BlackhawkWebComponents/analytic-elements.git",
+  "_target": "master",
+  "_originalSource": "BlackhawkWebComponents/analytic-elements",
+  "_direct": true
+}

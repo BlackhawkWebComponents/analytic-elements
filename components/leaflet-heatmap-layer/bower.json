@@ -1,0 +1,31 @@
+{
+    "name": "leaflet-heatmap-layer",
+    "homepage": "http://blackhawkwebcomponents.github.io/leaflet-heatmap-layer",
+    "description": "",
+    "main": "leaflet-heatmap-layer.html",
+    "authors": [
+        "Rob Beers"
+    ],
+    "license": "Apache2",
+    "version": "0.1.1",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests",
+        "../"
+    ],
+    "keywords": [
+        "web-component",
+        "web-components",
+        "polymer",
+        "leaflet",
+        "map",
+        "heatmap"
+    ],
+    "dependencies": {
+        "polymer": "Polymer/polymer#master",
+        "leaflet-map": "nhnb/leaflet-map#master"
+    }
+}

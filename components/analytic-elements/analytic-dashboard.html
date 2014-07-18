@@ -1,0 +1,256 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="analytic-card.html">
+<link rel="import" href="analytic-date-selector.html">
+<link rel="import" href="../solr-analytic/solr-analytic.html">
+<link rel="import" href="../bigquery-analytic/bigquery-analytic.html">
+
+<!-- needed for bigquery -->
+<link rel="import" href="../google-signin/google-signin.html">
+
+<core-style id="analytic-dashboard">
+    section {
+        overflow: auto;
+    }
+
+    .main section {
+        background-color: #eee;
+    }
+    .card {
+        background-color: white;
+        box-sizing: border-box;
+        width: 100%;
+        z-index: 10000;
+    }
+
+    .wide.card {
+        width: 90%;
+        margin-top: 64px;
+    }
+
+    .wide .dashboard-bg {
+        width: 512px;
+        height: 512px;
+    }
+
+    .dashboard-bg > core-icon {
+        position: absolute !important;
+    }
+
+    .main-button {
+        position: absolute;
+        top: 12px;
+        left: 8px;
+        fill: #424242;
+        z-index: 10000;
+    }
+
+    .main-button.wide {
+        position: fixed;
+        top: 12px;
+        left: 16px;
+        fill: #424242;
+    }
+
+    .title {
+        padding-left: 56px;
+        font-size: 16px;
+    }
+
+    .wide .title {
+        padding: 0;
+    }
+
+    .scroll {
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .wide > .main-button {
+        top: 12px;
+        left: 16px;
+    }
+
+    .main {
+        position: relative;
+    }
+
+    .main::-webkit-scrollbar {
+        display: none;
+    }
+
+    google-signin {
+        padding-right: 8px;
+    }
+</core-style>
+
+<script>
+    CoreStyle.g.columns = 2;
+</script>
+
+<!--
+Element providing ..
+
+##### Example
+
+    <analytic-dashboard>
+    </analytic-dashboard>
+
+@element analytic-dashboard
+@blurb Element providing ..
+@status alpha
+@url http://bhawke.github.io/analytic-dashboard
+
+TODO: figure out how to bind where vals to target, look at <core-bind>
+-->
+<!--<polymer-element
+        name="analytic-dashboard"
+        on-analytic-item-selected="{{analyticItemSelected}}"
+        attributes="dashboard selected wide" vertical layout>-->
+<polymer-element
+        name="analytic-dashboard"
+        attributes="dashboard selected wide" vertical layout
+        on-analytic-dashboard-control-change="{{queryUpdated}}"
+        on-analytic-item-selected="{{analyticItemSelected}}">
+    <template>
+        <core-style ref="analytic-dashboard"></core-style>
+
+        <link rel="stylesheet" href="dashboard-themes.css">
+
+        <div class="{{dashboard.theme}}-theme theme-bg-a {{ {wide: wide} | tokenList }}" dummy fit layout vertical center center-justified hero-id="punch" hero>
+            <div class="dashboard-bg" relative?="{{wide}}" flex?="{{!wide}}">
+
+            </div>
+        </div>
+
+        <div class="main {{ {scroll: wide} | tokenList }}" flex center layout vertical hero-p>
+
+            <div flex vertical layout slide-up-offscreen?="{{parentElement.selected === 'dashboard'}}"  cross-fade="{{!wide && parentElement.selected !== 'dashboard'}}" class="card {{ {wide: wide} | tokenList }}" relative>
+                <core-toolbar class="{{dashboard.theme}}-theme theme-bg">
+                    <div layout horizontal center flex>
+                        <div class="title">
+                            <core-icon style="height: 48px; width: 48px;"  icon="drive-fusiontable" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}" cross-fade="{{parentElement.selected !== 'dashboard'}}"></core-icon>
+                            <span>{{dashboard.name}}</span>
+
+
+                        </div>
+                        <div flex></div>
+                        <google-signin
+                                clientId="616981594512-9qhbmltja9bhuoh1rfl2mesej0qqj6b8.apps.googleusercontent.com"
+                                scopes="https://www.googleapis.com/auth/bigquery">
+                        </google-signin>
+                    </div>
+
+
+                </core-toolbar>
+
+                <section flex>
+                    <div layout vertical>
+                        <content select="analytic-date-selector"></content>
+                        <template if="{{dashboard.global.dateSelector}}">
+                            <analytic-date-selector
+                                    startDate="{{dashboard.global.dateSelector.startDate}}"
+                                    endDate="{{dashboard.global.dateSelector.endDate}}">
+                            </analytic-date-selector>
+                        </template>
+                    </div>
+                    <div flex horizontal wrap layout>
+                        <content id="cards" select="analytic-card"></content>
+
+                        <template repeat="{{analytic in dashboard.analytics}}">
+                            <analytic-card analytic="{{analytic}}"
+                                           global="{{dashboard.global}}"
+                                           wide="{{wide}}"
+                                           authorized="{{authorized}}"
+                                           query="{{query}}">
+                            </analytic-card>
+
+                        </template>
+                    </div>
+                </section>
+
+            </div>
+
+            <paper-icon-button class="main-button {{ {'theme-color': !wide, wide: wide} | tokenList }}" icon="arrow-back"  on-tap="{{mainAction}}" hero?="{{parentElement.selected === 'dashboards'}}" cross-fade-delayed?="{{parentElement.selected === 'dashboard'}}"></paper-icon-button>
+
+        </div>
+
+
+    </template>
+
+    <script>
+        Polymer('analytic-dashboard', {
+            //selected: 'front',
+            //selectedItem: null,
+            wide: false,
+            authorized: false,
+            created: function() {
+                document.addEventListener('google-signin-success', function(event) {
+                    //console.log('google-signing-success');
+                    this.authorized = true;
+                }.bind(this));
+                this.g = CoreStyle.g;
+                this.query = {};
+            },
+            wideChanged: function() {
+                if (this.wide)
+                    this.g.columns = 2;
+                else
+                    this.g.columns = 1;
+            },
+            /**
+             * TODO: make it so we don't have to treat each scenario differently, unify model
+             */
+            analyticItemSelected : function(event, detail, sender) {
+                if (!this.dashboard)
+                    event.srcElement.target = detail.items[0].label;
+            },
+            mainAction: function() {
+                this.fire('main');
+            },
+
+            /**
+             * The `queryUpdated` method is the callback for whenever the
+             * `analytics-dashboard-control-change` event is fired. It updates the
+             * query attribute, which is then sent to child charts.
+             *
+             * @method queryUpdated
+             * @param {CustomEvent} event - The event with the query data.
+             */
+            queryUpdated: function(event, details) {
+                //console.log('queryUpdated', details);
+                if (details.startDate)
+                    this.query.startDate = details.startDate;
+                if (details.endDate)
+                    this.query.endDate = details.endDate;
+                /**
+                // Update `this.query` with the passed event data.
+                Object.keys(event.detail).forEach(function(key) {
+                    this.query[key] = event.detail[key];
+                }.bind(this))
+
+                this.updateChildren();
+                **/
+            },
+
+            /**
+             * The `updateChildren` method updates each of this dashboards
+             * `<analytic-card>` element with its current query value.
+             *
+             * @method updateChildren
+             */
+            updateChildren: function() {
+
+                /**
+                var charts = this.querySelectorAll('analytic-card');
+                for (var i = 0, chart; chart = charts[i]; i++) {
+                    Object.keys(this.query).forEach(function(key) {
+                        chart[key] = this.query[key];
+                    }.bind(this));
+                }**/
+            }
+
+
+        });
+    </script>
+</polymer-element>

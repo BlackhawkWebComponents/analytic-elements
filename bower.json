@@ -1,0 +1,11 @@
+{
+  "name": "analytic-elements#gh-pages",
+  "private": true,
+  "resolutions": {
+    "polymer": "master",
+    "platform": "master"
+  },
+  "dependencies": {
+    "analytic-elements": "BlackhawkWebComponents/analytic-elements#master"
+  }
+}

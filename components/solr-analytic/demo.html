@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>solr-analytic Demo</title>
+
+    <script src="../platform/platform.js"></script>
+    <link rel="import" href="solr-analytic.html">
+
+</head>
+<style>
+    solr-analytic {
+        width: 500px;
+        height: 300px;
+    }
+</style>
+<body unresolved>
+
+<template is="auto-binding">
+
+    <p>A <code>&lt;solr-analytic&gt;</code> looks like this:</p>
+
+    <solr-analytic
+            title="By Manufacturer"
+            baseUrl="http://localhost:8983/solr/"
+            chartType="Doughnut"
+            showLegend="true"
+            limit="10"
+            on-analytic-item-selected="{{analyticItemSelected}}">
+        <q-select>
+            <q-field expr="manu_id_s"></q-field>
+        </q-select>
+        <q-from>
+            <q-dataset name="collection1"></q-dataset>
+        </q-from>
+    </solr-analytic>
+
+    <p>Selected</p>
+    <pre>{{selectedItem | json}}</pre>
+</template>
+
+<script>
+    var t = document.querySelector("template");
+    t.analyticItemSelected = function(event, detail, sender) {
+        t.selectedItem = detail;
+        sender.target = detail.items[0].label;
+    }
+    t.json = function(value) {
+        return JSON.stringify(value, null, 2);
+    }
+</script>
+
+</body>
+</html>

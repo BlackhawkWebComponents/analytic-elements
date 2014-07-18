@@ -1,0 +1,358 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../chart-js/chart-js.html">
+<link rel="import" href="../leaflet-map/leaflet-map.html">
+<link rel="import" href="../leaflet-heatmap-layer/leaflet-heatmap-layer.html">
+<link rel="import" href="../x-loading/x-loading.html">
+
+<!--
+Element providing ..
+
+##### Example
+
+    <analytic-base
+        title=""
+    </analytic-base>
+
+@element analytic-base
+@blurb Element providing ..
+@status alpha
+@url http://blackhawkwebcomponents.github.io/analytic-base
+
+TODO: remove title and all references in demos
+-->
+<polymer-element name="analytic-base"
+                 on-query-change="processQueryChanged"
+                 attributes="title chartType limit target showLegend height lat lon zoom minZoom maxZoom mapTileUrl mapSourceUrl mapSource heatmapMax">
+    <template>
+        <style>
+            :host {
+                display: block;
+                position: relative;
+            }
+            leaflet-map {
+                display: block;
+                max-width: 100%;
+                height: 250px;
+            }
+            google-map {
+                display: block;
+                max-width: 100%;
+                height: 250px;
+            }
+            .loading {
+                display: block;
+                max-width: 100%;
+                height: 250px;
+            }
+        </style>
+
+        <content></content>
+
+        <template if="{{!queryRunning && chartReady && chartType != 'Map'}}">
+            <chart-js
+                    kind="{{chartType}}"
+                    height="{{height}}"
+                    showLegend="{{showLegend}}"
+                    data="{{chartData}}"
+                    on-chart-items-selected="{{analyticItemSelected}}">
+            </chart-js>
+        </template>
+
+        <template if="{{!queryRunning && chartReady && chartType == 'Map'}}">
+            <!-- Note: zoomPanOptions animate:false and zoomAnimationThreshold = 0 required for core-animated-pages -->
+            <leaflet-map latitude="{{lat}}" longitude="{{lon}}" zoom="{{zoom}}" minZoom="{{minZoom}}" maxZoom="{{maxZoom}}">
+                <leaflet-tilelayer
+                        url="{{mapTileUrl}}"
+                        minZoom="{{minZoom}}" maxZoom="{{maxZoom}}" noWrap>
+                    Map source: <a href="{{mapSourceUrl}}">{{mapSource}}</a>
+                </leaflet-tilelayer>
+                <leaflet-heatmap-layer data="{{chartData}}" maxZoom="{{maxZoom}}" max="{{heatmapMax}}"></leaflet-heatmap-layer>
+            </leaflet-map>
+        </template>
+        <template if="{{queryRunning}}">
+            <div class="loading">
+                <x-loading></x-loading>
+            </div>
+
+        </template>
+    </template>
+    <script>
+        Polymer('analytic-base', {
+            height: '250px',
+            /**
+             * Fired when a analytic item is clicked on chart
+             *
+             * @event analytic-item-selected
+             */
+
+            /**
+             * A title to be displayed on top of the analytic.
+             * @attribute title
+             * @type string
+             */
+            title: 'My Analytic',
+
+            /**
+             * Type of chart (Bar, Pie, Line, Radar, Doughnut, PolarArea)
+             * @attribute chartType
+             * @type string
+             * @default Bar
+             */
+            chartType: 'Bar',
+
+            /**
+             * Displays a legend on the chart (Pie, Doughnut, PolarArea)
+             * @attribute showLegend
+             * @type boolean
+             * @default false
+             */
+            showLegend: false,
+
+            /**
+             * Limit rows returned
+             * @attribute limit
+             * @type integer
+             * @default null
+             */
+            limit:null,
+
+            /**
+             * Flag to know whether query is running
+             * @attribute queryRunning
+             * @type boolean
+             * @default false
+             */
+            queryRunning: false,
+
+            /**
+             * Flag to know whether chart is ready
+             * @attribute chartReady
+             * @type boolean
+             * @default false
+             */
+            chartReady: false,
+
+            /**
+             * Response returned from api
+             * @attribute response
+             * @type object or array
+             * @default null
+             */
+            response: null,
+
+            /**
+             * map center lat
+             * @attribute lat
+             * @type float
+             * @default null
+             */
+            lat: null,
+
+            /**
+             * map center lon
+             * @attribute lon
+             * @type float
+             * @default null
+             */
+            lon: null,
+
+            /**
+             * map zoom level
+             * @attribute zoom
+             * @type integer
+             * @default null
+             */
+            zoom: null,
+
+            /**
+             * map min zoom level
+             * @attribute minZoom
+             * @type integer
+             * @default null
+             */
+            minZoom: null,
+
+            /**
+             * map max zoom level
+             * @attribute maxZoom
+             * @type integer
+             * @default null
+             */
+            maxZoom: null,
+
+            /**
+             * map tile url (Example http://{s}.tiles.mapbox.com/v3/mapbox.iraq/{z}/{x}/{y}.png)
+             * @attribute mapTileUrl
+             * @type string
+             * @default null
+             */
+            mapTileUrl: null,
+
+            /**
+             * map source url (example: http://www.mapbox.com/about/maps/)
+             * @attribute mapSourceUrl
+             * @type string
+             * @default null
+             */
+            mapSourceUrl: null,
+
+            /**
+             * map source title (example: Terms &amp; Conditions)
+             * @attribute mapSource
+             * @type string
+             * @default null
+             */
+            mapSource: null,
+
+            /**
+             * heatmap max point density
+             * @attribute heatmapMax
+             * @type float
+             * @default 1.0
+             */
+            heatmapMax: 1.0,
+
+
+            created: function () {
+                this.chartData = {};
+            },
+            processQueryChanged: function(event, detail) {
+                this.query = detail.query;
+                this.queryRunning = true;
+                this.runQuery();
+            },
+            responseChanged: function() {
+                this.queryRunning = false;
+                this.chartData = this.chartFormat(this.response);
+                this.chartReady = true;
+            },
+            chartFormat: function(value) {
+                // first get thre common chart format from the concrete element
+                var commonFormat = this.commonChartFormat(value);
+                var chartFormat;
+
+                if (this.chartType == 'Bar') {
+                    chartFormat = {
+                        labels: commonFormat.labels,
+                        datasets: [{
+                            fillColor : "rgba(239,241,245,1)",
+                            strokeColor : "rgba(0,0,0,0)",
+                            highlightFill: "rgba(230,233,240,1)",
+                            data: commonFormat.data
+                        }]
+                    };
+                } else if (this.chartType == 'Pie' || this.chartType == 'Doughnut' || this.chartType == 'PolarArea') {
+                    // TODO: support more than 10 colors, will break if data is > 10
+                    chartFormat = [];
+                    for (var i = 0; i < commonFormat.data.length; ++i ) {
+                        chartFormat.push(
+                                {
+                                    value: commonFormat.data[i],
+                                    color:colors[i].color,
+                                    highlight: colors[i].highlight,
+                                    label: commonFormat.labels[i]
+                                }
+                        )
+                    }
+                } else if (this.chartType == 'Line' || this.chartType == 'Radar') {
+                    //console.log('chartFormat is Line');
+                    chartFormat = {
+                        labels: commonFormat.labels,
+                        datasets: [{
+                            label: "",
+                            fillColor: "rgba(220,220,220,0.2)",
+                            strokeColor: "rgba(220,220,220,1)",
+                            pointColor: "rgba(220,220,220,1)",
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: "rgba(220,220,220,1)",
+                            data: commonFormat.data
+                        }]
+                    };
+                } else if (this.chartType == 'Map') {
+                    return commonFormat;
+                }
+
+                return chartFormat;
+            },
+            /**
+             * To be implemented by concrete element
+             */
+            runQuery: function() {
+
+            },
+            /**
+             * To be implemented by concrete element
+             */
+            commonChartFormat: function(value) {
+                // common format to adhere to
+                var commonFormat = {
+                    labels: [],
+                    data: []
+                }
+                return commonFormat;
+            },
+            analyticItemSelected: function(event, detail) {
+                this.fire('analytic-item-selected', detail);
+            },
+            json: function(value) {
+                return JSON.stringify(value, null, 2);
+            }
+        });
+
+        var red = "#bf616a",
+                blue = "#5B90BF",
+                orange = "#d08770",
+                yellow = "#ebcb8b",
+                green = "#a3be8c",
+                teal = "#96b5b4",
+                pale_blue = "#8fa1b3",
+                purple = "#b48ead",
+                brown = "#ab7967";
+        pink = "#e81d62";
+
+        var colors = [
+            {'color':red, 'highlight':Color(red,10)},
+            {'color':blue, 'highlight':Color(blue,10)},
+            {'color':orange, 'highlight':Color(orange,10)},
+            {'color':yellow, 'highlight':Color(yellow,10)},
+            {'color':green, 'highlight':Color(green,10)},
+            {'color':teal, 'highlight':Color(teal,10)},
+            {'color':pale_blue, 'highlight':Color(pale_blue,10)},
+            {'color':purple, 'highlight':Color(purple,10)},
+            {'color':brown, 'highlight':Color(brown,10)},
+            {'color':pink, 'highlight':Color(pink,10)}
+        ]
+
+        function Color(col, amt) {
+
+            var usePound = false;
+
+            if (col[0] == "#") {
+                col = col.slice(1);
+                usePound = true;
+            }
+
+            var num = parseInt(col,16);
+
+            var r = (num >> 16) + amt;
+
+            if (r > 255) r = 255;
+            else if  (r < 0) r = 0;
+
+            var b = ((num >> 8) & 0x00FF) + amt;
+
+            if (b > 255) b = 255;
+            else if  (b < 0) b = 0;
+
+            var g = (num & 0x0000FF) + amt;
+
+            if (g > 255) g = 255;
+            else if (g < 0) g = 0;
+
+            return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+
+        }
+    </script>
+</polymer-element>
+

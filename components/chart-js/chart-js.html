@@ -1,0 +1,226 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="chart-js-import.html">
+
+/**
+*
+* Chart.js element
+*
+* Easy, object oriented client side graphs for designers and developers.
+*
+* http://www.chartjs.org
+*
+* @class chart-js
+* @blurb Easy, object oriented client side graphs for designers and developers.
+* @snap http://polymer.github.io/chart-js/components/chart-js/snap.png
+* @origin-url http://www.chartjs.org/
+* @author The Polymer Authors
+* @categories Charts and Graphs
+* @license Three-clause BSD
+* @license-url //polymer.github.io/chart-js/components/chart-js/LICENSE
+*
+*/
+<!--
+TODO: fork chartjs and make changes made to for resize
+TODO: use polymer layout for chart with legend and get legend as json from chartjs api
+TODO: make it so you can pass in any case for types
+-->
+<polymer-element name="chart-js" attributes="data kind options showLegend height">
+    <template>
+        <style>
+            :host {
+                display: block;
+                position:relative;
+                width: 100%;
+                height: 100%;
+                font-family: "proxima-nova", 'Helvetica Neue', 'Helvetica', 'sans-serif';
+                color: #232830;
+            }
+            * {
+                padding: 0;
+                margin: 0;
+                color: inherit;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+            *,
+            *:before,
+            *:after {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+            .labeled-chart-container {
+                padding-right: 150px;
+                min-height: 180px;
+                position: relative;
+                overflow: scroll;
+            }
+            @media only screen and (max-width: 600px) {
+                .labeled-chart-container {
+                    padding-right: 130px;
+                }
+            }
+            .pie-legend, .doughnut-legend, .polararea-legend {
+                list-style: none;
+                position: absolute;
+                right: 8px;
+                max-width:200px;
+                top: 0;
+            }
+            .pie-legend li, .doughnut-legend li, .polararea-legend li {
+                display: block;
+                padding-left: 30px;
+                position: relative;
+                margin-bottom: 4px;
+                border-radius: 5px;
+                padding: 2px 8px 2px 28px;
+                font-size: 14px;
+                cursor: default;
+                -webkit-transition: background-color 200ms ease-in-out;
+                -moz-transition: background-color 200ms ease-in-out;
+                -o-transition: background-color 200ms ease-in-out;
+                transition: background-color 200ms ease-in-out;
+            }
+            .pie-legend li:hover, .doughnut-legend li:hover, .polararea-legend li:hover {
+                background-color: #fafafa;
+            }
+            .pie-legend li span, .doughnut-legend li span, .polararea-legend li span {
+                display: block;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 20px;
+                height: 100%;
+                border-radius: 5px;
+            }
+            .canvas-holder {
+                margin:0;
+                padding:0;
+
+            }
+            .chart {
+                margin:0;
+                padding:0;
+            }
+        </style>
+
+        <div id="container" class="{{ {'labeled-chart-container': showLegend} | tokenList }}">
+            <div class="canvas-holder" style="{{ {height: height} | styleObject}}">
+                <canvas id="chart" width="250" height="250">
+                </canvas>
+            </div>
+        </div>
+
+        <!--
+        <div class="container">
+            <canvas id="chart"></canvas>
+        </div>
+        -->
+
+    </template>
+    <script>
+        Polymer('chart-js', {
+            /**
+             * Fired when a bar in chart is clicked.
+             *
+             * @event chart-items-selected
+             */
+
+            kind: '',
+            data: null,
+            options: null,
+            showLegend: false,
+            chart: null,
+            created: function() {
+                this.options = {
+                    responsive:true
+                };
+                this.helpers = Chart.helpers;
+            },
+            ready: function() {
+                //window.addEventListener('resize', this.updateSize.bind(this));
+            },
+            attached: function () {
+                this.ctx = this.$.chart.getContext('2d');
+                this.updateChart();
+            },
+            updateChart: function () {
+
+                if (this.data && this.ctx) {
+                    this.$.chart.width = this.clientWidth;
+                    this.$.chart.height = this.clientHeight;
+
+                    if (this.chart) {
+                        this.chart.clear();
+                        this.chart.destroy();
+                        if (this.showLegend && this.$.container.children.length > 1) {
+                            this.$.container.children[1].remove();
+                        }
+                    }
+
+                    var chart = new Chart(this.ctx);
+                    var kind = this.kind;
+                    this.chart = chart[kind](this.data, this.options);
+                    chart = this.chart;
+
+                    this.$.chart.onclick = (function(evt){
+                        // simplified selected item for
+                        var selected = {"items":[]}
+
+                        var activeItems;
+                        if (this.kind == 'Bar')
+                            activeItems = this.chart.getBarsAtEvent(evt);
+                        else if (this.kind == 'Line' || this.kind == 'Radar')
+                            activeItems = this.chart.getPointsAtEvent(evt);
+                        else if (this.kind == 'Pie' || this.kind == 'Doughnut' || this.kind == 'PolarArea')
+                            activeItems = this.chart.getSegmentsAtEvent(evt);
+
+                        for (var i = 0; i < activeItems.length; ++i) {
+                            selected.items.push({"label":activeItems[i].label, "value":activeItems[i].value});
+                        }
+
+                        this.chartItemsSelected(selected);
+
+                    }).bind(this);
+
+                    if (this.showLegend) {
+                        var legendHolder = document.createElement('div');
+                        legendHolder.innerHTML = this.chart.generateLegend();
+                        var helpers = this.helpers;
+                        // Include a html legend template after the module doughnut itself
+                        helpers.each(legendHolder.firstChild.childNodes, function(legendNode, index){
+                            helpers.addEvent(legendNode, 'mouseover', function(){
+                                var activeSegment = chart.segments[index];
+                                activeSegment.save();
+                                activeSegment.fillColor = activeSegment.highlightColor;
+                                chart.showTooltip([activeSegment]);
+                                activeSegment.restore();
+                            });
+                        });
+                        helpers.addEvent(legendHolder.firstChild, 'mouseout', function(){
+                            chart.draw();
+                        });
+
+                        this.$.chart.parentNode.parentNode.appendChild(legendHolder.firstChild);
+
+                    }
+
+                }
+            },
+            dataChanged: function () {
+                this.updateChart();
+            },
+            kindChanged: function () {
+                this.updateChart();
+            },
+            chartItemsSelected: function(value) {
+                this.fire('chart-items-selected', value);
+            }
+        });
+    </script>
+</polymer-element>

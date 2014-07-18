@@ -1,0 +1,150 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../analytic-base/analytic-base.html">
+<link rel="import" href="../bigquery-api/bigquery-api.html">
+<link rel="import" href="../bigquery-query/bigquery-query.html">
+
+<!--
+Element providing analytic graph for google big query
+
+##### Example
+
+    <bigquery-analytic
+        title="Actor Known Groups"
+        projectId="blackhawk-website"
+        chartType="Bar">
+
+        <q-select>
+            <q-field expr="actor1knowngroupcode"></q-field>
+            <q-field expr="count(*)" as="actor1_knowngroup_count"></q-field>
+        </q-select>
+        <q-from>
+            <q-dataset name="[gdelt-bq:full.events]"></q-dataset>
+        </q-from>
+        <q-where>
+            <q-condition
+                field="actor1knowngroupcode"
+                op="isnotnull"></q-condition>
+            <q-condition
+                field="actiongeo_countrycode"
+                op="equals"
+                value="'IZ'"></q-condition>
+            <q-condition
+                field="year"
+                op="equals"
+                value="2014"></q-condition>
+        </q-where>
+        <q-group-by fields="['actor1knowngroupcode']"></q-group-by>
+
+    </bigquery-analytic>
+
+@element bigquery-analytic
+@blurb Element providing analytic graph for google big query
+@status alpha
+@extends analytic-base
+@url http://blackhawkwebcomponents.github.io/bigquery-analytic
+-->
+<polymer-element name="bigquery-analytic"
+                 extends="analytic-base"
+                 attributes="projectId authorized"
+                 on-bigquery-response="{{gotResponse}}">
+    <template>
+
+        <bigquery-query outputQuery="{{query}}" limit="{{limit}}">
+            <content select="q-select"></content>
+            <content select="q-from"></content>
+            <content select="q-where"></content>
+            <content select="q-group-by"></content>
+            <content select="q-order-by"></content>
+        </bigquery-query>
+
+        <bigquery-api id="bigquery"
+                      auto
+                      query="{{query.sql}}"
+                      projectId="{{projectId}}"
+                      authorized="{{authorized}}">
+        </bigquery-api>
+
+        <shadow></shadow>
+
+    </template>
+    <script>
+        Polymer('bigquery-analytic', {
+            /**
+             * Google Big Query project Id to be used
+             * @attribute projectId
+             * @type string
+             */
+            projectId: null,
+            authorized: false,
+            runQuery: function() {
+                // do nothing, bigquery is set to auto
+                //this.$.bigquery.runQuery();
+            },
+            gotResponse: function(event, detail) {
+                //console.log('gotResponse: ' + JSON.stringify(detail.response, this, null));
+                this.response = detail.response;
+            },
+            commonChartFormat: function(value) {
+                //console.log('processing commonChartFormat');
+                //console.log(JSON.stringify(value, null, 2));
+                var bqResponse = value;
+
+                // preprocess step, will make it easier to work with??
+                var arr = [];
+                if (bqResponse && bqResponse.rows) {
+                    for (var i = 0; i < bqResponse.rows.length; ++i) {
+                        var row = bqResponse.rows[i];
+                        if (this.chartType != 'Map') {
+                            var outrow = {};
+                            for (var j = 0; j < row.f.length; ++j) {
+                                var val;
+                                if (bqResponse.schema.fields[j].type == 'INTEGER')
+                                    val = parseInt(row.f[j].v);
+                                else
+                                    val = row.f[j].v;
+                                outrow[bqResponse.schema.fields[j].name] = val;
+                            }
+                            arr.push(outrow);
+                        } else {
+                            // TODO: make this more robust, for now assume lat, lon, [intensity]
+                            if (row.f.length == 2)
+                                arr.push([parseFloat(row.f[0].v), parseFloat(row.f[1].v)]);
+                            else if (row.f.length == 3)
+                                arr.push([parseFloat(row.f[0].v), parseFloat(row.f[1].v)], row.f[2].v);
+                        }
+
+                    }
+                }
+
+                //console.log('arr: ' + JSON.stringify(arr, null, 2));
+
+                if (this.chartType == 'Map') {
+                    //console.log('arr: ' + JSON.stringify(arr, null, 2));
+                    return arr;
+                }
+
+
+                /**
+                 * We can get more sophisticated in the future but for now we will assume
+                 * first field is label and second is some sort of metric
+                 */
+                var labels = [];
+                var data = [];
+                for (var i = 0; i < arr.length; ++i) {
+                    labels.push(arr[i][bqResponse.schema.fields[0].name]);
+                    data.push(arr[i][bqResponse.schema.fields[1].name]);
+                }
+
+                var commonFormat = {
+                    labels:labels,
+                    data:data
+                };
+                //console.log('commonFormat: ' + JSON.stringify(commonFormat, null, 2));
+                return commonFormat;
+
+            }
+
+        });
+    </script>
+</polymer-element>
+

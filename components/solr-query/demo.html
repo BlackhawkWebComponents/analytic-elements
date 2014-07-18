@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>solr-query Demo</title>
+
+    <script src="../platform/platform.js"></script>
+    <link rel="import" href="solr-query.html">
+
+</head>
+<body unresolved>
+
+<template id="mytemplate" is="auto-binding">
+
+    <p>solr-query looks like this</p>
+    <solr-query
+            outputQuery="{{outputQuery}}"
+            baseUrl="http://localhost:8983/solr/"
+            debug="true">
+        <q-select>
+            <q-field expr="cat"></q-field>
+        </q-select>
+        <q-from>
+            <q-dataset name="collection1"></q-dataset>
+        </q-from>
+        <q-where>
+            <q-condition field="manu_id_s" op="equals" value="canon"></q-condition>
+        </q-where>
+    </solr-query>
+
+    <p>Solr Output Query</p>
+    <a href="{{outputQuery.url}}" target="_blank">{{outputQuery.url}}</a>
+</template>
+
+
+</body>
+</html>

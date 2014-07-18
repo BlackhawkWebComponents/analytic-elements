@@ -1,0 +1,37 @@
+{
+  "name": "solr-api",
+  "homepage": "http://blackhawkwebcomponents.github.io/solr-api",
+  "description": "",
+  "main": "solr-api.html",
+  "authors": [
+    "Rob Beers"
+  ],
+  "license": "Apache2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "../"
+  ],
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "solr"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "core-ajax": "Polymer/core-ajax#master"
+  },
+  "_release": "9a63562739",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "9a63562739d8136332908c4aa16be5ee5925ad48"
+  },
+  "_source": "git://github.com/BlackhawkWebComponents/solr-api.git",
+  "_target": "*",
+  "_originalSource": "BlackhawkWebComponents/solr-api"
+}

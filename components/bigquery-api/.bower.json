@@ -1,0 +1,40 @@
+{
+  "name": "bigquery-api",
+  "homepage": "http://blackhawkwebcomponents.github.io/bigquery-api",
+  "description": "Encapsulates Google Big Query into a web component",
+  "main": "bigquery-api.html",
+  "authors": [
+    "Rob Beers"
+  ],
+  "license": "Apache2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "../"
+  ],
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "bigquery",
+    "google"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "google-apis": "PolymerLabs/google-apis#master",
+    "google-signin": "GoogleWebComponents/google-signin#master",
+    "native-promise-only": "~0.4.1-g"
+  },
+  "_release": "43de922b3a",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "43de922b3a3e3a95ca0051328622a9474454a5bd"
+  },
+  "_source": "git://github.com/BlackhawkWebComponents/bigquery-api.git",
+  "_target": "*",
+  "_originalSource": "BlackhawkWebComponents/bigquery-api"
+}

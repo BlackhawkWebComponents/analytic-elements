@@ -1,0 +1,115 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../core-animated-pages/core-animated-pages.html">
+<link rel="import" href="../core-animated-pages/transitions/cross-fade.html">
+<link rel="import" href="../core-animated-pages/transitions/slide-up.html">
+<link rel="import" href="../core-animated-pages/transitions/slide-down.html">
+<link rel="import" href="../core-animated-pages/transitions/scale-up.html">
+<link rel="import" href="../core-animated-pages/transitions/tile-cascade.html">
+<link rel="import" href="../core-animated-pages/transitions/hero-transition.html">
+<link rel="import" href="../core-style/core-style.html">
+<link rel="import" href="../core-media-query/core-media-query.html">
+
+<link rel="import" href="analytic-dashboards.html">
+<link rel="import" href="analytic-dashboard.html">
+
+<core-style id="analytic-app">
+    :host {
+        overflow: hidden;
+    }
+    .splash {
+        background: url(../images/loading_icon.svg);
+        background-color: #eee;
+        background-repeat: no-repeat;
+        background-position: 50%;
+    }
+
+    .splash.wide {
+        background-size: 512px;
+    }
+
+</core-style>
+
+<polymer-element name="analytic-app" attributes="dashboards" vertical layout>
+    <template>
+        <core-style ref="analytic-app"></core-style>
+
+        <core-animated-pages selected="{{selected}}" transitions="cross-fade cross-fade-delayed scale-up slide-up slide-up-offscreen slide-down tile-cascade hero-transition" flex on-core-animated-pages-transition-end="{{transitionEndAction}}">
+
+            <div id="splash" name="splash">
+                <span fit class="splash {{ {wide: wide} | tokenList }}" cross-fade></span>
+            </div>
+
+            <analytic-dashboards id="dashboards" name="dashboards"
+                               dashboards="{{dashboards}}" dashboard="{{dashboard}}" wide="{{wide}}"
+                               on-core-activate="{{dashboardSelect}}" ></analytic-dashboards>
+
+            <analytic-dashboard id="dashboard" name="dashboard" dashboard="{{dashboard}}" wide="{{wide}}"></analytic-dashboard>
+
+        </core-animated-pages>
+
+        <core-media-query query="min-width: {{responsiveWidth}}" queryMatches="{{wide}}"></core-media-query>
+    </template>
+    <script>
+
+        (function() {
+
+
+            window.setAnalyticsAppTransitionSpeed = function(ms) {
+                CoreStyle.g.transitions.duration = ms + 'ms';
+                CoreStyle.g.transitions.scaleDelay = CoreStyle.g.transitions.duration;
+            }
+
+            setAnalyticsAppTransitionSpeed(350);
+
+
+            Polymer('analytic-app', {
+
+                selected: 'splash',
+
+                responsiveWidth: '900px',
+
+                minSplashTime: 1000,
+
+                ready: function() {
+                    this.readyTime = Date.now();
+                    this.startup();
+                },
+
+                startup: function() {
+                    var elapsed = Date.now() - this.readyTime;
+                    var t = this.minSplashTime - elapsed;
+                    this.async('completeStartup', null, t > 0 ? t : 0);
+                },
+
+                completeStartup: function() {
+                    this.selected = 'dashboards';
+                },
+
+                showDashboards: function() {
+                    this.selected = 'dashboards';
+                },
+
+                showDashboard: function() {
+                    this.selected = 'dashboard';
+                },
+
+                dashboardSelect: function() {
+                    this.showDashboard();
+                },
+
+                eventDelegates: {
+                    'main': 'showDashboards'
+                },
+
+                transitionEndAction: function() {
+                    //console.log('transitionEndAction');
+                }
+
+
+            });
+
+        })();
+    </script>
+
+</polymer-element>

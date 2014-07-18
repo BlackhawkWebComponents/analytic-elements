@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>solr-api Demo</title>
+
+    <script src="../platform/platform.js"></script>
+    <link rel="import" href="solr-api.html">
+
+</head>
+<body unresolved>
+
+<template id="mytemplate" is="auto-binding">
+
+    <solr-api
+            url="http://localhost:8983/solr/collection1/select/?wt=json&q=*:*&rows=0&facet=true&facet.field=cat"
+            auto
+            on-solr-response="{{gotResults}}">
+    </solr-api>
+
+    <p>Response:</p>
+    <pre>{{response | json}}</pre>
+</template>
+
+<script>
+    document.addEventListener('polymer-ready', function() {
+
+        var t = document.querySelector("#mytemplate");
+        t.gotResults = function(e, detail) {
+            console.log(JSON.stringify(detail));
+            t.response = detail.response;
+        }
+        t.json = function(value) {
+            return JSON.stringify(value, null, 2);
+        }
+    });
+</script>
+
+</body>
+</html>

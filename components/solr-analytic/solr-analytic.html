@@ -1,0 +1,103 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../analytic-base/analytic-base.html">
+<link rel="import" href="../solr-api/solr-api.html">
+<link rel="import" href="../solr-query/solr-query.html">
+<link rel="import" href="../chart-js/chart-js.html">
+
+
+<!--
+Element providing analytic graph for google big query
+
+##### Example
+
+    <solr-analytic
+        title="Actor Known Groups"
+        baseUrl="http://localhost:8983/solr/
+        chartType="bar">
+
+       <q-select>
+            <q-field expr="name"></q-field>
+            <q-field expr="id"></q-field>
+            <q-field expr="score"></q-field>
+        </q-select>
+        <q-from>
+            <q-dataset name="collection1"></q-dataset>
+        </q-from>
+        <q-where>
+            <q-condition field="name" op="equals" value="Foo"></q-condition>
+        </q-where>
+
+    </solr-analytic>
+
+@element solr-analytic
+@blurb Element providing analytic graph for google big query
+@status alpha
+@extends analytic-base
+@url http://blackhawkwebcomponents.github.io/solr-analytic
+
+-->
+
+<polymer-element name="solr-analytic"
+                 extends="analytic-base"
+                 attributes="baseUrl">
+    <template>
+
+        <solr-query baseUrl="{{baseUrl}}" limit="{{limit}}">
+            <content select="q-select"></content>
+            <content select="q-from"></content>
+            <content select="q-where"></content>
+            <content select="q-group-by"></content>
+        </solr-query>
+
+        <solr-api id="solr"
+                  url="{{query.url}}"
+                  on-solr-response="{{gotResponse}}">
+        </solr-api>
+
+        <shadow></shadow>
+
+    </template>
+    <script>
+        Polymer('solr-analytic', {
+
+            runQuery: function() {
+                this.$.solr.go();
+            },
+            gotResponse: function(event, detail) {
+                this.response = detail.response;
+            },
+            commonChartFormat: function(value) {
+                var solrResponse = value;
+                var labels = [];
+                var data = [];
+                if (solrResponse && solrResponse.facet_counts && solrResponse.facet_counts.facet_fields) {
+                    var facetFieldVals = solrResponse.facet_counts.facet_fields[
+                            solrResponse.responseHeader.params['facet.field']];
+
+                    for (var i = 0 ; i < facetFieldVals.length; ++i) {
+                        if ((i%2) == 0) {
+                            // not sure if we can filter in solr to only return values > 0 but we will filter
+                            // them out here.  TODO: look into filtering out counts=0 in solr
+                            if (facetFieldVals[i+1] > 0) {
+                                labels.push(facetFieldVals[i]);
+                                data.push(facetFieldVals[i+1]);
+                            }
+                        }
+                    }
+                }
+
+                var commonFormat = {
+                    labels:labels,
+                    data:data
+                };
+
+                return commonFormat;
+
+            }
+
+        });
+
+
+    </script>
+</polymer-element>
+

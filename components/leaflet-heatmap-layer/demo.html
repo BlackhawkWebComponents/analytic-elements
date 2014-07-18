@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>leaflet-heatmap-layer Demo</title>
+
+    <script src="../platform/platform.js"></script>
+    <link rel="import" href="../leaflet-map/leaflet-map.html">
+    <link rel="import" href="leaflet-heatmap-layer.html">
+
+    <style>
+        body {
+            height: 100%;
+            margin: 1em;
+            font-family: Arial;
+        }
+
+        leaflet-map {
+            max-width: 40em;
+            height: 30em;
+            border: 1px solid #aaa;
+        }
+
+    </style>
+</head>
+<body unresolved>
+
+<template is="auto-binding">
+
+    <p>A <code>&lt;leaflet-heatmap-layer&gt;</code> looks like this:</p>
+
+    <leaflet-map latitude="33.219300000000004" longitude="43.6842" zoom="6" minZoom="6" maxZoom="9">
+        <leaflet-tilelayer
+                url="https://{s}.tiles.mapbox.com/v3/mapbox.iraq/{z}/{x}/{y}.png"
+                minZoom="6" maxZoom="9" noWrap>
+            Map source: <a href="http://www.mapbox.com/about/maps/">Terms &amp; Feedback</a>
+        </leaflet-tilelayer>
+        <leaflet-heatmap-layer data="{{data}}"></leaflet-heatmap-layer>
+    </leaflet-map>
+
+</template>
+
+<script>
+    var t = document.querySelector('template');
+    t.data = [
+        [33.2193, 43.6842, "1000"],
+        [33.2193, 43.6842, "1000"],
+        [33.2193, 43.6842, "1000"],
+        [33.2193, 43.6842, "1000"],
+        [33.2193, 43.6842, "1000"]
+    ];
+</script>
+
+</body>
+</html>

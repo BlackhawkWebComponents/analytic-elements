@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>bigquery-analytic Demo</title>
+
+    <script src="../platform/platform.js"></script>
+    <link rel="import" href="bigquery-analytic.html">
+    <link rel="import" href="../google-signin/google-signin.html">
+
+</head>
+<body unresolved>
+
+<template is="auto-binding">
+    <div>
+        <google-signin
+                clientId="616981594512-9qhbmltja9bhuoh1rfl2mesej0qqj6b8.apps.googleusercontent.com"
+                scopes="https://www.googleapis.com/auth/bigquery">
+        </google-signin>
+    </div>
+
+    <p>A <code>&lt;bigquery-analytic&gt;</code> looks like this:</p>
+
+    <bigquery-analytic
+            title="Iraq - Actor1 Groups June 2014"
+            projectId="blackhawk-website"
+            chartType="Bar"
+            on-analytic-item-selected="{{analyticItemSelected}}">
+        <q-select>
+            <q-field expr="actor1knowngroupcode"></q-field>
+            <q-field expr="count(*)" as="actor1_knowngroup_count"></q-field>
+        </q-select>
+        <q-from>
+            <q-dataset name="[gdelt-bq:full.events]"></q-dataset>
+        </q-from>
+        <q-where>
+            <q-condition field="actor1knowngroupcode" op="isnotnull"></q-condition>
+            <q-condition field="actiongeo_countrycode" op="equals" value="'IZ'"></q-condition>
+            <q-condition field="monthyear" op="equals" value="201406"></q-condition>
+        </q-where>
+        <q-group-by fields="['actor1knowngroupcode']"></q-group-by>
+    </bigquery-analytic>
+
+    <div>
+        <p>Selected Item</p>
+        <pre>{{selectedItem | json}}</pre>
+    </div>
+</template>
+
+<script>
+    var t = document.querySelector("template");
+    t.analyticItemSelected = function(event, detail) {
+        t.selectedItem = detail;
+    }
+    t.json = function(value) {
+        return JSON.stringify(value, null, 2);
+    }
+</script>
+
+</body>
+</html>

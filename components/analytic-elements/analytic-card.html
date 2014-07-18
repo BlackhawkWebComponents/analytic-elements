@@ -1,0 +1,200 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-icons/core-icons.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-shadow/paper-shadow.html">
+
+<link rel="import" href="app-globals.html">
+<link rel="import" href="../core-style/core-style.html">
+<link rel="import" href="../solr-analytic/solr-analytic.html">
+<link rel="import" href="../bigquery-analytic/bigquery-analytic.html">
+
+<core-style id="analytic-card">
+    :host {
+        display: inline-block;
+        height: 300px;
+        width: calc({{ 100 / g.columns }}% - 32px);
+        background: white;
+        margin: 16px;
+        padding-bottom: 20px;
+        border-radius: 2px;
+    }
+
+    paper-icon-button {
+        vertical-align: middle;
+    }
+
+    .header {
+        padding-bottom:4px;
+        padding-top:4px;
+        padding-left: 16px;
+        padding-right:8px;
+    }
+</core-style>
+
+<!--
+Element providing ..
+
+##### Example
+
+    <analytic-card>
+    </analytic-card>
+
+@element analytic-card
+@blurb Element providing ..
+@status alpha
+@url http://bhawke.github.io/analytic-card
+-->
+<polymer-element name="analytic-card"
+                 attributes="name interactive analytic global wide query authorized"
+                 vertical center center-justified layout>
+    <template>
+        <app-globals id="globals"></app-globals>
+        <core-style ref="analytic-card"></core-style>
+
+        <paper-shadow z="1"></paper-shadow>
+
+        <div vertical layout fit>
+            <div class="header" horizontal layout center>
+                <!--<google-signin
+                        clientId="616981594512-9qhbmltja9bhuoh1rfl2mesej0qqj6b8.apps.googleusercontent.com"
+                        scopes="https://www.googleapis.com/auth/bigquery">
+                </google-signin>-->
+                <div class="title" flex>{{name}}</div>
+                <div layout horizontal end-justified>
+                    <paper-icon-button icon="refresh" on-tap="{{reset}}"></paper-icon-button>
+                </div>
+            </div>
+            <div class="chart" flex>
+                <content id="analytic"></content>
+                <template if="{{analytic.type == 'solr'}}">
+                    <solr-analytic analytic
+                                   baseUrl="{{$.globals.solrUrl}}"
+                                   chartType="{{analytic.chartType}}"
+                                   height="{{chartHeight}}"
+                                   showLegend="{{analytic.showLegend}}"
+                                   limit="{{analytic.limit}}"
+                                   target="{{analytic.target}}"
+                                   on-analytic-item-selected="{{analyticItemSelected}}">
+                        <q-select>
+                            <template repeat="{{analytic.query.select}}">
+                                <q-field expr="{{expr}}"></q-field>
+                            </template>
+                        </q-select>
+                        <q-from>
+                            <q-dataset name="{{analytic.query.from}}"></q-dataset>
+                        </q-from>
+                        <q-where>
+                            <template repeat="{{analytic.query.where}}">
+                                <q-condition field="{{field}}" op="{{op}}" value="{{value}}"></q-condition>
+                            </template>
+                            <template repeat="{{cond, i in global.query.where}}">
+                                <q-condition field="{{cond.field}}" op="{{cond.op}}" value="{{cond.value}}"></q-condition>
+                            </template>
+                            <template if="{{global.dateSelector}}">
+                                <q-condition field="{{global.dateSelector.field}}" op="{{global.dateSelector.op}}"
+                                             value="{{query.startDate}}" value2="{{query.endDate}}"></q-condition>
+                            </template>
+                        </q-where>
+                    </solr-analytic>
+                </template>
+                <template if="{{analytic.type == 'bigquery'}}">
+                    <bigquery-analytic
+                            analytic
+                            projectId="{{$.globals.projectId}}"
+                            chartType="{{analytic.chartType}}"
+                            height="{{chartHeight}}"
+                            limit="{{analytic.limit}}"
+                            showLegend="{{analytic.showLegend}}"
+                            target="{{analytic.target}}"
+                            on-analytic-item-selected="{{analyticItemSelected}}"
+                            authorized="{{authorized}}"
+                            lat="{{analytic.map.lat}}"
+                            lon="{{analytic.map.lon}}"
+                            zoom="{{analytic.map.zoom}}"
+                            minZoom="{{analytic.map.minZoom}}"
+                            maxZoom="{{analytic.map.maxZoom}}"
+                            mapTileUrl="{{analytic.map.mapTileUrl}}"
+                            mapSourceUrl="{{analytic.map.mapSourceUrl}}"
+                            mapSource="{{analytic.map.mapSource}}"
+                            heatmapMax="{{analytic.map.heatmapMax}}">
+                        <q-select>
+                            <template repeat="{{analytic.query.select}}">
+                                <q-field expr="{{expr}}" as="{{as}}"></q-field>
+                            </template>
+                        </q-select>
+                        <q-from>
+                            <q-dataset name="{{analytic.query.from}}"></q-dataset>
+                        </q-from>
+                        <q-where>
+                            <template repeat="{{analytic.query.where}}">
+                                <q-condition field="{{field}}" op="{{op}}" value="{{value}}"></q-condition>
+                            </template>
+                            <template repeat="{{cond, i in global.query.where}}">
+                                <q-condition field="{{cond.field}}" op="{{cond.op}}" value="{{cond.value}}"></q-condition>
+                            </template>
+                            <template if="{{global.dateSelector}}">
+                                <q-condition field="{{global.dateSelector.field}}" op="{{global.dateSelector.op}}"
+                                             value="{{query.startDate}}" value2="{{query.endDate}}"></q-condition>
+                            </template>
+                        </q-where>
+                        <q-group-by fields="{{analytic.query.groupBy}}"></q-group-by>
+                        <q-order-by fields="{{analytic.query.orderBy}}"></q-order-by>
+                    </bigquery-analytic>
+                </template>
+            </div>
+        </div>
+
+    </template>
+    <script>
+        Polymer('analytic-card', {
+            name: '',
+            interactive:false,
+            analytic: null,
+            chartHeight:'250px',
+            authorized: false,
+            analyticChanged: function() {
+                if (this.analytic != null) {
+                    this.name = this.analytic.name;
+                }
+            },
+            /**
+             * TODO: make it so we don't have to treat each scenario differently, unify model
+             */
+            reset: function() {
+                if (this.$.analytic && this.$.analytic.getDistributedNodes()[1]) {
+                    var analytic = this.$.analytic.getDistributedNodes()[1];
+                    analytic.target = null;
+                } else {
+                    for (var i = 0; i < this.global.query.where.length; ++i) {
+                        var cond = this.global.query.where[i];
+                        if (cond.field === this.analytic.target) {
+                            cond.value = null;
+                        }
+                    }
+                }
+
+            },
+            /**
+             * TODO: make it so we don't have to treat each scenario differently, unify model
+             */
+            analyticItemSelected : function(event, detail, sender) {
+                //console.log('analyticItemSelected: ' + JSON.stringify(detail, null, 2));
+                if (this.global) {
+                    var target = sender.target;
+                    var val = detail.items[0].label;
+                    if (val == null)
+                        console.log('val in selected is null, TODO: fix this for line charts');
+                    for (var i = 0; i < this.global.query.where.length; ++i) {
+                        var cond = this.global.query.where[i];
+                        //console.log('cond: ' + JSON.stringify(cond, null, 2));
+                        if (cond.field === target) {
+                            //console.log('cond.field = target, setting cond.value to ' + val);
+                            cond.value = val;
+                        }
+                    }
+                }
+
+            }
+        });
+    </script>
+</polymer-element>

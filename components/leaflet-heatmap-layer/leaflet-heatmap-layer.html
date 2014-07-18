@@ -1,0 +1,137 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../leaflet-map/leaflet-import.html">
+<link rel="import" href="../leaflet-map/leaflet-layer.html">
+<link rel="import" href="heatmap-import.html">
+
+<!--
+element which defines a tile layer (<a href="http://leafletjs.com/reference.html#tilelayer">Leaflet Reference</a>).
+works with leaflet-map and extends leaflet-ilayer (https://github.com/nhnb/leaflet-map)
+
+##### Example
+
+	<leaflet-heatmap-layer data={{data}}>
+
+	</leaflet-heatmap-layer>
+
+@element leaflet-heatmap-layer
+@blurb element which defines a heatmap layer.
+@status beta
+@homepage http://blackhawkwebcomponents.github.io/leaflet-heatmap-layer
+@extends leaflet-ilayer
+-->
+
+<polymer-element name="leaflet-heatmap-layer" extends="leaflet-ilayer" attributes="data radius maxZoom max blur gradient">
+    <template>
+        <style>
+            :host {
+                display: none;
+            }
+        </style>
+    </template>
+    <script>
+        "use strict";
+
+        Polymer('leaflet-heatmap-layer', {
+
+            /**
+             * The `radius` attribute sets the radius of each "point" of the heatmap.
+             *
+             * @attribute radius
+             * @type number
+             * @default 25
+             */
+            radius: 25,
+
+            /**
+             * The `maxZoom` attribute sets the minimum zoom number.
+             *
+             * @attribute maxZoom
+             * @type number
+             * @default null
+             */
+            maxZoom:18,
+
+            /**
+             * The `max` attribute sets the maximum point intensity.
+             *
+             * @attribute max
+             * @type number
+             * @default 1.0
+             */
+            max:1.0,
+
+            /**
+             * The `blur` attribute sets the amount of blur, 15 by default.
+             *
+             * @attribute blur
+             * @type number
+             * @default 15
+             */
+            blur:15,
+
+            /**
+             * The `gradient` attribute sets the gradient colors.
+             *
+             * {0.4: 'blue', 0.65: 'lime', 1: 'red'}
+             *
+             * @attribute gradient
+             * @type object
+             * @default null
+             */
+            gradient: null,
+
+            /**
+             * The `data` attribute sets the data points.
+             *   [ [33.2193, 43.6842, "1000"], [33.2193, 43.6842, "1000"]]
+             * Optional third argument in each LatLng point (altitude) represents point intensity.
+             *
+             * @attribute data
+             * @type object
+             * @default null
+             */
+
+
+            created: function() {
+                this.gradient = {0.4: 'blue', 0.65: 'lime', 1: 'red'};
+                this.data = [];
+            },
+
+            // unloadInvisibleTiles updateWhenIdle bounds
+
+            containerChanged: function() {
+                if (this.container) {
+
+                    var layer = L.heatLayer(this.data, {
+                        radius: this.radius,
+                        maxZoom: this.maxZoom,
+                        max: this.max,
+                        blur: this.blur,
+                        gradient: this.gradient
+                    });
+
+                    //layer.setLatLngs(this.data);
+
+                    this.layer = layer;
+
+                    this.layer.addTo(this.container);
+                }
+            },
+
+            dataChanged: function() {
+                if (this.layer) {
+                    console.log('dataChanged');
+                    this.layer.setLatLngs(this.data);
+                    this.layer.redraw();
+                }
+            },
+
+            detached: function() {
+                if (this.container && this.layer) {
+                    this.container.removeLayer(this.layer);
+                }
+            }
+        });
+    </script>
+</polymer-element>
+
+
